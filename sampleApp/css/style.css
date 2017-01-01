@@ -1,0 +1,76 @@
+.SideBar {
+  background: rgba(236,239,241,0.56);
+  box-shadow: 3px 0 6px rgba(0,0,0,0.24);
+  padding-bottom: 72px;
+  width: 240px;
+  bottom: 0;
+  top:50px;
+  overflow: auto;
+  position: fixed;
+  left: 0;
+}
+
+.SideBar-Navs {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  left: 0;
+}
+
+.Details {
+  position: absolute;
+  left: 240px;
+  top: 50px;
+  bottom: 0;
+  right: 0;
+}
+
+.DetailsHeader {
+  box-sizing: border-box;
+  box-shadow: none;
+  padding: 48px 48px 32px 48px;
+  height: 100px;
+  background-color: #1976D2;
+  background: -webkit-linear-gradient(305deg,#A9A9A9,#42A5F5);
+  background: linear-gradient(145deg,#A9A9A9,#42A5F5);
+  color: #fff;
+}
+
+.DetailsTitle {
+  display: inline-block;
+  font-size: 28px;
+  font-weight: 400;
+  float: left;
+  line-height: 20px;
+  margin: 0 8px 0 0;
+  text-transform: uppercase;
+}
+
+.DetailsBanner {
+  background: rgba(236,239,241,0.24);
+  border-bottom: 1px solid #ECEFF1;
+  box-sizing: border-box;
+  font-size: 18px;
+  font-weight: 300;
+  padding: 12px 28px;
+  min-height: 50px;
+}
+
+.Content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 150px;
+  bottom: 0;
+  overflow: scroll;
+  background: #fff;
+}
+
+.padBox {
+  padding: 20px;
+  color: #546E7A;
+}
+
+.glyph {
+  margin-left: 15px;
+}
