@@ -2,52 +2,61 @@ import React from 'react';
 import { ListGroup, ListGroupItem, Collapse, Glyphicon } from 'react-bootstrap';
 import { Link } from 'react-router'
 
-const SideBar = React.createClass({
+export default class SideBar extends React.Component {
+	constructor(props) {
+		super(props);
+		this.handleCollapse = this.handleCollapse.bind(this);
+		this.getGlyphName = this.getGlyphName.bind(this);
+		this.state = {
+			tradeOpen: false,
+			refOpen: false
+		};
+	}
 
-	getInitialState() {
-		return {
-			open: false
-		}
-	},
+	handleCollapse (name) {
+		var stateObject = {};
+		stateObject[name+'Open'] = !this.state[name+'Open']
+		this.setState(stateObject)
+	}
 
-	handleCollapse () {
-		this.setState({ open: !this.state.open })
-	},
-
-	handleSelect (selectedKey) {
-	  alert('selected ' + selectedKey);
-	},
-
-	getGlyphName () {
-		return this.state.open ? "chevron-up" : "chevron-down";
-	},
+	getGlyphName (name) {
+		return this.state[name+'Open'] ? "chevron-up" : "chevron-down";
+	}
 
 	render () {
 		return (
-			<div className="SideBar">
-				<ListGroup className="SideBar-Navs">
+			<div className = "SideBar">
+				<ListGroup className = "SideBar-Navs">
 				    <ListGroupItem>
-				    	<Link to="home">Home</Link>
+				    	<Link to = "home"> Home </Link>
 				    </ListGroupItem>
-				    <ListGroupItem href="#" onClick={this.handleCollapse}>
-				    	The Trade Service Group
-				    	<Glyphicon className="glyph" glyph={this.getGlyphName()}/>
+				    <ListGroupItem href = "#" onClick = { this.handleCollapse.bind(this,'trade') }>
+						Trade Service Group
+				    	<Glyphicon className = "glyph" glyph = { this.getGlyphName('trade') }/>
 				    </ListGroupItem>
-				    <Collapse in={this.state.open}>
+				    <Collapse in = { this.state.tradeOpen }>
 			          <div>
-		            	<ListGroup className="SideBar-Navs">
-						    <ListGroupItem href="#" >InfoPrices</ListGroupItem>
-						    <ListGroupItem href="#" >Prices</ListGroupItem>
-						    <ListGroupItem href="#" >Trade/Orders</ListGroupItem>
-						    <ListGroupItem href="#" >Trade/Positions</ListGroupItem>
+		            	<ListGroup className = "SideBar-Navs">
+						    <ListGroupItem href = "#infoPrices"> InfoPrices </ListGroupItem>
+						    <ListGroupItem href = "#prices"> Prices </ListGroupItem>
+						    <ListGroupItem href = "#"> Orders </ListGroupItem>
+						    <ListGroupItem href = "#"> Positions</ListGroupItem>
 						</ListGroup>
 			          </div>
 			        </Collapse>
-			        <ListGroupItem href="#">The Reference Data Group</ListGroupItem>
+			        <ListGroupItem href = "#" onClick = { this.handleCollapse.bind(this,'ref') }> 
+			        	Reference Data Group
+			        	<Glyphicon className = "glyph" glyph = { this.getGlyphName('ref') }/>
+			        </ListGroupItem>
+			        <Collapse in = { this.state.refOpen }>
+			          <div>
+		            	<ListGroup className = "SideBar-Navs">
+						    <ListGroupItem href = "#instruments"> Instruments </ListGroupItem>
+						</ListGroup>
+			          </div>
+			        </Collapse>
 				</ListGroup>
 			</div>
 		)
 	}
-});
-
-export default SideBar;
+}

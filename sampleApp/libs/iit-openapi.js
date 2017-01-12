@@ -1,7 +1,7 @@
 /*
  *  iit-shared-js 3.0.0
  */
-; (function (global) {
+; (function (global, $) {
 	"use strict";
 
 	var iit_utils_object, iit_utils_enum, iit_utils_function, iit_utils_string, iit_micro_emitter, iit_log, iit_utils_fetch, iit_price_formatting_modern_fractions_character, iit_number_formatting_format, iit_price_formatting_format, iit_price_formatting_parse, iit_number_formatting_parse, iit_number_formatting_short_format, iit_number_formatting_number_formatting, iit_price_formatting_valid_characters, iit_price_formatting_price_formatting, iit_price_formatting_format_options, iit_openapi_batch_util, iit_openapi_transport_core, iit_openapi_transport_auth, iit_openapi_transport_queue, iit_openapi_transport_batch, iit_openapi_streaming_subscription, iit_openapi_streaming_heartbeater, iit_openapi_streaming_orphan_finder, iit_openapi_streaming_streaming, iit_openapi_packagejs;
@@ -106,7 +106,7 @@ iit_utils_enum = function (exports, _object) {
    * @returns {Object}
    * @example
    * var enum = enumUtils.makeDefinition(["Percentage", "DeciPips"]);
-   * // enum = 
+   * // enum =
    * //     {
    * //     "Percentage": "Percentage",
    * //     "DeciPips": "DeciPips"
@@ -622,7 +622,7 @@ iit_utils_fetch = function (exports, _log) {
   /**
   * Performs a fetch and processes the response.
   * All non 200 responses are converted to rejections. The body can be an object and will be JSON.stringified and the right header added.
-  * All responses that contain JSON are converted to objects. 
+  * All responses that contain JSON are converted to objects.
   * @function
   * @alias iit.utils.fetch
   * @param {string} method - The http method.
@@ -1378,7 +1378,7 @@ iit_number_formatting_number_formatting = function (exports, _format, _parse, _s
   /**
    * Formats a number into a localised string.
    * @param {number} num - The number to format.
-   * @param {number} [decimals] - The number of decimals to display after the decimal point. 
+   * @param {number} [decimals] - The number of decimals to display after the decimal point.
    *                              If undefined then the number is formatted with however many decimal places it needs to display the number (upto 8).
    * @returns {string}
    */
@@ -2746,7 +2746,7 @@ iit_openapi_streaming_subscription = function (exports, _utilsObject, _log) {
       url: this.url
     });
     this.currentState = STATE_SUBSCRIBE_REQUESTED;
-    this.transport.post(this.serviceGroup, this.url + '/active', null, { body: data }).then(onSubscribeSuccess.bind(this, referenceId)).catch(onSubscribeError.bind(this, referenceId));
+    this.transport.post(this.serviceGroup, this.url + '/active', null, { body: data}).then(onSubscribeSuccess.bind(this, referenceId)).catch(onSubscribeError.bind(this, referenceId));
   }
   /**
   * Does an actual unsubscribe.
@@ -3782,4 +3782,4 @@ iit_openapi_packagejs = function (exports, _iitUtilsEnum, _iitUtilsFunction, _ii
 	else { // otherwise we expose globally
 		global["iit"] = iit_openapi_packagejs;
 	}
-}(this));
+}(this, window.$));

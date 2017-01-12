@@ -2,8 +2,6 @@ var fs = require('fs');
 var path = require('path');
 var webpack = require('webpack');
 var CODE = __dirname+'/sampleApp';
-var React = require('react');
-var ReactDOMServer = require('react-dom/server');
 
 module.exports = {
 

@@ -1,19 +1,19 @@
 import React from 'react';
-import { Router, Route, NotFoundRoute, browserHistory }  from 'react-router';
 import TopBar from './TopBar';
 import SideBar from './SideBar';
 import Details from './Details';
 
-class App extends React.Component {
+export default class App extends React.Component {
+	constructor(props) {
+		super(props);
+	}
 	render () {
 		return (
 			<div>
 				<TopBar/>
 				<SideBar/>
-				<Details page={this.props.children}/>
+				{this.props.children}
 			</div>
 		)
 	}
 }
-
-export default App;

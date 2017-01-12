@@ -4,13 +4,20 @@ import { Router, Route, hashHistory, DefaultRoute }  from 'react-router';
 
 import App from './components/App'
 import Home from './components/Home';
+import InfoPrices from './components/trade/infoprices/InfoPrices';
+import Prices from './components/Prices';
+import Instruments from './components/ref/instruments/Instruments'
+
 
 const Routes = () => {
 	return (
 		<Router history={hashHistory}>
 			<Route path="/" component={App}>
 		    	<Route path="home" component={Home}/>
-		    </Route>
+		    	<Route path="infoPrices" component={InfoPrices}/>
+				<Route path="prices" component={Prices}/>
+				<Route path="instruments" component={Instruments}/>
+			</Route>
 		</Router>
 	)
 }

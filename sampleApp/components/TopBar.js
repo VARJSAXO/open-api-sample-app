@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 
-const TopBar = React.createClass({
+export default class TopBar extends React.Component {
 	render () {
 		return (
 			<Navbar inverse collapseOnSelect>
@@ -19,7 +19,5 @@ const TopBar = React.createClass({
 			</Navbar>
 		)
 	}
-});
-
-export default TopBar;
+}
 
