@@ -2,10 +2,10 @@ import React from 'react';
 import {render} from 'react-dom';
 import { Router, Route, hashHistory, DefaultRoute }  from 'react-router';
 
-import App from './components/App'
+import App from './AppContainer'
 import Home from './components/Home';
 import InfoPrices from './components/trade/infoprices/InfoPrices';
-import Prices from './components/Prices';
+import Prices from './components/trade/prices/Prices';
 import Instruments from './components/ref/instruments/Instruments'
 
 

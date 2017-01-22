@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, DropdownButton, MenuItem, Table} from 'react-bootstrap';
+import { Button, Table} from 'react-bootstrap';
 
 export default (props) => {
 
@@ -10,7 +10,7 @@ export default (props) => {
 	    ): null }					 
 		    <br/>
 		    <br/>
-		    {props.instrumentSelected ? (
+		    { props.instrumentSelected ? (
 				<Table striped bordered condensed hover>
 				    <thead>
 				      <tr>
@@ -27,11 +27,9 @@ export default (props) => {
 				        <th></th>
 				      </tr>
 				    </thead>
-				    <tbody>
-						{ props.getInstrumentData() }
-				    </tbody>
+				    <tbody>{props.getInstrumentData()}</tbody>
 				</Table>
-		    ): null}
+		    ) : null }
 		</div>
 	)
 };

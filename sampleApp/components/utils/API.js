@@ -1,27 +1,25 @@
 import DataService from './DataService'
 
-const APIStore = {
-    getInstruments (queryParams, successCallback, errorCallback) {
+export default {   
+    getInstruments: (queryParams, successCallback, errorCallback) => {
         var data = {
             method: 'get',
             serviceGroup: 'ref',
             endPoint: 'v1/instruments',
             queryParams: queryParams
         };
-        DataService.createTransport()
         DataService.getData(data, successCallback, errorCallback);
     },
-    getInfoPrices (queryParams, successCallback, errorCallback) {
+    getInfoPrices:  (queryParams, successCallback, errorCallback) => {
         var data = {
             method: 'get',
             serviceGroup: 'trade',
             endPoint: 'v1/infoprices',
             queryParams: queryParams
         };
-        DataService.createTransport()
         DataService.getData(data, successCallback, errorCallback);
     },
-    subscribeInfoPrices (instrumentData, successCallback) {
+    subscribeInfoPrices:  (instrumentData, successCallback, errorCallback) => {
         var data = {
             method: 'post',
             serviceGroup: 'trade',
@@ -34,11 +32,9 @@ const APIStore = {
                   "RefreshRate": 5
             }
         }
-        DataService.createTransport()
-        DataService.createStreamingObject();
-        DataService.subscribe(data, successCallback, ((data)=>console.log(data)))
+        DataService.subscribe(data, successCallback, errorCallback)
     },
-    subscribePrices (instrumentData, successCallback) {
+    subscribePrices:  (instrumentData, successCallback, errorCallback) => {
         var data = {
             method: 'post',
             serviceGroup: 'trade',
@@ -53,10 +49,6 @@ const APIStore = {
                   "ContextId": "29931122",
             }
         }
-        DataService.createTransport()
-        DataService.createStreamingObject();
-        DataService.subscribe(data, successCallback, ((data)=>console.log(data)))
+        DataService.subscribe(data, successCallback, errorCallback)
     }
 }
-
-export default APIStore;

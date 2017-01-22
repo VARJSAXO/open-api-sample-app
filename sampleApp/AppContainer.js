@@ -1,7 +1,6 @@
 import React from 'react';
-import TopBar from './TopBar';
-import SideBar from './SideBar';
-import Details from './Details';
+import TopBar from './components/TopBar';
+import SideBar from './components/SideBar';
 
 export default class App extends React.Component {
 	constructor(props) {

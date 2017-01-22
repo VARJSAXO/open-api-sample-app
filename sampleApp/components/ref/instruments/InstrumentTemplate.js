@@ -1,11 +1,11 @@
 import React from 'react';
 import { ButtonToolbar, DropdownButton, MenuItem, Table} from 'react-bootstrap';
-import { isEmpty, isObject } from 'lodash'
+import { isEmpty } from 'lodash'
 
 export default (props) => {
     var instruments = props.instrumentList.map((instrument) =>  <MenuItem eventKey = {instrument} key = {instrument.Symbol}> {instrument.Description} </MenuItem> );
     var assetTypes = props.assetTypes.map((assetType) => <MenuItem eventKey = {assetType} key = {assetType}> {assetType} </MenuItem> );
-    var headers = !isEmpty(props.instrumentList) ? Object.keys(props.instrumentList[0]).map((key) => <td> {key} </td>) : null;
+    var headers = !isEmpty(props.instrumentList) ? Object.keys(props.instrumentList[0]).map((key) => <th key={key}> {key} </th>) : null;
 	var data =  !isEmpty(props.instrumentList) ? props.instrumentList.map((instrument) =>
 			      <tr key={instrument.Uic}>
 			        <td>{instrument.Description}</td>
@@ -19,25 +19,25 @@ export default (props) => {
 	return (
 	    <div className="padBox">
 		    <ButtonToolbar>
-		        <DropdownButton bsStyle="default" title="Select Asset Type" id="dropdown-size-large" onSelect={props.onAssetTypeSelectionChange}>
+		        <DropdownButton bsStyle="primary" title="Select Asset Type" id="dropdown-size-large" onSelect = {props.onAssetTypeSelectionChange}>
 		        	{assetTypes}	
 		        </DropdownButton>
 		        { props.hasInstruments ?
 		        	props.parent ? 
-			        (<DropdownButton bsStyle="default" title="Select Instruments" id="dropdown-size-large" onSelect={props.onInstrumentSelected}>
+			        (<DropdownButton bsStyle="primary" title="Select Instruments" id="dropdown-size-large" onSelect = {props.onInstrumentSelected}>
 						{instruments}
 			        </DropdownButton>) :
-			        ( 
-			         <Table striped bordered condensed hover>
-					    <thead>
-					      <tr>
-					      	{headers}
-					      </tr>
-					    </thead>
-					    <tbody>
-					    {data}
-					    </tbody>
-					 </Table>) 
+			        ( <div>
+			        	<br/>
+			        	<br/>
+			        	<br/>
+				        <Table striped bordered condensed hover>
+						    <thead>
+						      <tr> {headers} </tr>
+						    </thead>
+						    <tbody> {data} </tbody>
+						</Table>
+					</div>) 
 				: null }
 		    </ButtonToolbar>	   
 		</div>

@@ -1,6 +1,6 @@
 import React from 'react';
-import { ListGroup, ListGroupItem, Collapse, Glyphicon } from 'react-bootstrap';
 import { Link } from 'react-router'
+import { ListGroup, ListGroupItem, Collapse, Glyphicon } from 'react-bootstrap';
 
 export default class SideBar extends React.Component {
 	constructor(props) {

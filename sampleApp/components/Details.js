@@ -1,10 +1,10 @@
 import React from 'react';
 
 export default class Details extends React.Component{
-    constructor(props)
-    {
+    constructor(props) {
         super(props);
     }
+    
     render () {
         return (
             <div className="Details">
