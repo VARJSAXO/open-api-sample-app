@@ -6,6 +6,8 @@ import App from './AppContainer'
 import Home from './components/Home';
 import InfoPrices from './components/trade/infoprices/InfoPrices';
 import Prices from './components/trade/prices/Prices';
+import Order from './components/trade/orders/Order';
+
 import Instruments from './components/ref/instruments/Instruments'
 
 
@@ -16,6 +18,7 @@ const Routes = () => {
 		    	<Route path="home" component={Home}/>
 		    	<Route path="infoPrices" component={InfoPrices}/>
 				<Route path="prices" component={Prices}/>
+				<Route path="orders" component={Order}/>
 				<Route path="instruments" component={Instruments}/>
 			</Route>
 		</Router>

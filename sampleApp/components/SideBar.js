@@ -39,12 +39,12 @@ export default class SideBar extends React.Component {
 		            	<ListGroup className = "SideBar-Navs">
 						    <ListGroupItem href = "#infoPrices"> InfoPrices </ListGroupItem>
 						    <ListGroupItem href = "#prices"> Prices </ListGroupItem>
-						    <ListGroupItem href = "#"> Orders </ListGroupItem>
+						    <ListGroupItem href = "#orders"> Orders </ListGroupItem>
 						    <ListGroupItem href = "#"> Positions</ListGroupItem>
 						</ListGroup>
 			          </div>
 			        </Collapse>
-			        <ListGroupItem href = "#" onClick = { this.handleCollapse.bind(this,'ref') }> 
+			        <ListGroupItem href = "#" onClick = { this.handleCollapse.bind(this,'ref') }>
 			        	Reference Data Group
 			        	<Glyphicon className = "glyph" glyph = { this.getGlyphName('ref') }/>
 			        </ListGroupItem>

@@ -29,5 +29,14 @@ export default {
     subscribe (params, successCallback, errorCallback) {
         this.subscription = this.streaming.createSubscription(params.serviceGroup, params.endPoint, params.queryParams , successCallback, errorCallback)
         this.streaming.subscribe(this.subscription);
+    },
+
+    getTransportSvc() {
+        return this.transport;
+    },
+
+    getStreamingSvc() {
+        return this.streaming;
     }
+
 };
