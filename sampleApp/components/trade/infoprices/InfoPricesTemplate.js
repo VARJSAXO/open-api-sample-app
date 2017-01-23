@@ -1,13 +1,16 @@
 import React from 'react';
-import { Button, Table} from 'react-bootstrap';
+import { ButtonToolbar, Button, Table} from 'react-bootstrap';
 
 export default (props) => {
 
 	return (
 		<div className="padBox">
 		{props.instrumentSelected ? (
-			<Button bsStyle="primary" onClick={props.subscribeInstruments} disabled={props.instrumentsSubscribed}>Subscribe</Button>
-	    ): null }					 
+			<ButtonToolbar>
+				<Button bsStyle="primary" onClick={props.subscribeInstruments} disabled={props.instrumentsSubscribed}>Subscribe</Button>
+	 			<Button bsStyle="primary" onClick={props.fetchInstrumentsData} disabled={props.instrumentsSubscribed}>Get Prices</Button>
+	 		</ButtonToolbar>
+	    ): null }
 		    <br/>
 		    <br/>
 		    { props.instrumentSelected ? (

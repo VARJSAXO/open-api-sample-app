@@ -17,7 +17,7 @@ export default class InfoPrices extends React.Component {
 		this.removeInstrument = this.removeInstrument.bind(this);
 		this.onInstrumentSelected = this.onInstrumentSelected.bind(this);
 		this.updateInstrumentData = this.updateInstrumentData.bind(this);
-		this.refreshInstrumentData = this.refreshInstrumentData.bind(this);
+		this.fetchInstrumentsData = this.fetchInstrumentsData.bind(this);
 		this.updateSubscribedInstruments = this.updateSubscribedInstruments.bind(this);
 		this.subscribeInstruments = this.subscribeInstruments.bind(this);
 		this.state =  {
@@ -31,23 +31,22 @@ export default class InfoPrices extends React.Component {
 	getInstrumentData () {
 		return (
 			map(this.instruments, (instrument) =>
-			      <tr key={instrument.Uic}>
-			        <td>{instrument.Uic}</td>
-			        <td>{instrument.AssetType}</td>
-			        <td>{instrument.Quote.Amount}</td>
-			        <td onChange={this.handleChange} className={this.highlightCell()}>{instrument.Quote.Ask}</td>
-			        <td>{instrument.Quote.Bid}</td>
-			        <td>{instrument.Quote.DelayedByMinutes}</td>
-			        <td>{instrument.Quote.ErrorCode}</td>
-			        <td>{instrument.Quote.Mid}</td>
-			        <td>{instrument.Quote.PriceTypeAsk}</td>
-			        <td>{instrument.Quote.PriceTypeBid}</td>
-			        <td><ButtonToolbar>
-					        <Button bsStyle="primary" bsSize="xsmall" onClick={this.refreshInstrumentData.bind(this, instrument)}>Refresh</Button>
-					        <Button bsStyle="primary" bsSize="xsmall" onClick={this.removeInstrument.bind(this, instrument.Uic)}>Remove</Button>
-			        	</ButtonToolbar>
-			        </td>
-			      </tr>
+		      <tr key={instrument.Uic}>
+		        <td>{instrument.Uic}</td>
+		        <td>{instrument.AssetType}</td>
+		        <td>{instrument.Quote.Amount}</td>
+		        <td className={this.highlightCell()}>{instrument.Quote.Ask}</td>
+		        <td className={this.highlightCell()}>{instrument.Quote.Bid}</td>
+		        <td>{instrument.Quote.DelayedByMinutes}</td>
+		        <td>{instrument.Quote.ErrorCode}</td>
+		        <td className={this.highlightCell()}>{instrument.Quote.Mid}</td>
+		        <td>{instrument.Quote.PriceTypeAsk}</td>
+		        <td>{instrument.Quote.PriceTypeBid}</td>
+		        <td><ButtonToolbar>
+				        <Button bsStyle="primary" bsSize="xsmall" onClick={this.removeInstrument.bind(this, instrument.Uic)}>Remove</Button>
+		        	</ButtonToolbar>
+		        </td>
+		      </tr>
 		    )
 		)
 	}
@@ -75,44 +74,39 @@ export default class InfoPrices extends React.Component {
 		});
 	}
 
-	refreshInstrumentData (instrument) {
-		API.getInfoPrices({
-			AssetType: instrument.AssetType,
-			uic: instrument.Uic
-		}, this.updateInstrumentData);
-	}
-
 	updateSubscribedInstruments (instruments) {
 		var instrumentData = instruments.Data;
 		for (var index in instrumentData) {
 		    merge(this.instruments[instrumentData[index].Uic], instrumentData[index]);
 		}
-		this.setState({
-			instrumentsSubscribed: true
-		});
+		this.setState({ changed: true });
 	}
 
 	subscribeInstruments () {
 		var uics = transform(this.instruments, ((concat, instrument) => concat['uic'] = concat['uic'] ? concat['uic'] +','+ instrument.Uic : instrument.Uic  ), {});
 		API.subscribeInfoPrices({ Uics: uics['uic'], AssetType: this.assetType }, this.updateSubscribedInstruments);
 		this.setState({
-			instrumentsSubscribed: true
+			instrumentsSubscribed: true,
 		});
 	}
 
-	handleChange () {
-		this.setState({changed: true});
+	fetchInstrumentsData () {
+		var uics = transform(this.instruments, ((concat, instrument) => concat['uic'] = concat['uic'] ? concat['uic'] +','+ instrument.Uic : instrument.Uic  ), {});
+		API.getInfoPricesList({ Uics: uics['uic'], AssetType: this.assetType }, this.updateSubscribedInstruments);
 	}
 
 	highlightCell () {
-		return this.state.changed ? "highlight" : null
+		if(this.state.changed) {
+			setTimeout(() => this.setState({changed: false}), 1000);
+		}
+		return this.state.changed ? "highlight" : '';
 	}
 
 	render () {
 		return (
 			<Details Title = "Info Prices" Description={this.description}>
 				<Instrument parent="true" onInstrumentSelected={this.onInstrumentSelected}/>
-				<InfoPricesTemplate instrumentSelected={this.state.instrumentSelected} getInstrumentData={this.getInstrumentData} subscribeInstruments={this.subscribeInstruments} instrumentsSubscribed={this.state.instrumentsSubscribed}/>
+				<InfoPricesTemplate instrumentSelected={this.state.instrumentSelected} getInstrumentData={this.getInstrumentData} subscribeInstruments={this.subscribeInstruments} instrumentsSubscribed={this.state.instrumentsSubscribed} fetchInstrumentsData={this.fetchInstrumentsData}/>
 			</Details>
 		)
 	}

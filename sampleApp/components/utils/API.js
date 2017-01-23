@@ -1,6 +1,6 @@
 import DataService from './DataService'
 
-export default {   
+export default {
     getInstruments: (queryParams, successCallback, errorCallback) => {
         var data = {
             method: 'get',
@@ -15,6 +15,15 @@ export default {
             method: 'get',
             serviceGroup: 'trade',
             endPoint: 'v1/infoprices',
+            queryParams: queryParams
+        };
+        DataService.getData(data, successCallback, errorCallback);
+    },
+    getInfoPricesList:  (queryParams, successCallback, errorCallback) => {
+        var data = {
+            method: 'get',
+            serviceGroup: 'trade',
+            endPoint: 'v1/infoprices/list',
             queryParams: queryParams
         };
         DataService.getData(data, successCallback, errorCallback);
@@ -41,7 +50,7 @@ export default {
             endPoint: 'v1/Prices/subscriptions',
             queryParams: {
                   "Arguments": {
-                    "AssetType": instrumentData.AssetType,                   
+                    "AssetType": instrumentData.AssetType,
                     "Uic": instrumentData.uic,
                   },
                   "RefreshRate": 5,
