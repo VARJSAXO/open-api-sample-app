@@ -1,3 +1,0 @@
-var AuthModel = function(authToken) {
-
-}
