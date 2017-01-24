@@ -84,9 +84,9 @@ export default {
         }
         DataService.subscribe(data, successCallback, errorCallback)
     },
-    getAccountInfo:(cbSuccess,cbError) => {
-        debugger;
 
+    // Get Account details.
+    getAccountInfo:(cbSuccess,cbError) => {
         var tranportSvc = DataService.getTransportSvc();
 
         //Describes how to call OpenApi using open source Iit library.
@@ -95,12 +95,14 @@ export default {
         .catch((result)=> { if(cbError) cbError(result) });
     },
 
+    // Dispose subscription.
     unsubscribe:(subscription) =>{
 
         var streamingSvc = DataService.getStreamingSvc();
             streamingSvc.disposeSubscription(subscription);
     },
 
+    // Place order
     placeOrder(order,cbSuccess,cbError) {
         var tranportSvc = DataService.getTransportSvc();
 
@@ -110,16 +112,20 @@ export default {
         .catch((result)=> { if(cbError) cbError(result) });
     },
 
+    // Create Order Subscription.
     creatOrderSubscription:(subscriptionArgs,cbSuccess,cbError)=>{
         var streamingSvc = DataService.getStreamingSvc();
         return streamingSvc.createSubscription('port', 'v1/orders/subscriptions', subscriptionArgs, cbSuccess, cbError);
     },
 
+    // Create Positions Subscription.
     createPositionsSubscription:(subscriptionArgs,cbSuccess,cbError)=>{
         var streamingSvc = DataService.getStreamingSvc();
         return streamingSvc.createSubscription('port', 'v1/positions/subscriptions', subscriptionArgs, cbSuccess, cbError);
     },
 
+    // Fetch Info Prices for a particular instrument based on AssetType and Uic. eg.
+    // Eg: Query Params : { AssetType: 'FxSpot', Uic: 21 }
     getInfoPrice:(queryParams,cbSuccess,cbError)=>{
         var tranportSvc = DataService.getTransportSvc();
 
