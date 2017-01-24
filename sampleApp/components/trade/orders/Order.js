@@ -279,6 +279,22 @@ export default class Order extends React.Component {
             <Col sm={6}>
             <Panel header="Account Info: openapi/port/v1/accounts/me" className="panel-primary">
             <div className="padBox">
+            <Table striped bordered condensed hover>
+                <thead>
+                    <tr>
+                        <th width='150'>Data</th>
+                        <th width='150'>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr  key="AccountId" ><td>AccountId</td><td>{this.accountInfo.AccountId}</td></tr>
+                    <tr  key="AccountKey"><td>AccountKey</td><td>{this.accountInfo.AccountKey}</td></tr>
+                    <tr  key="AccountType"><td>AccountType</td><td>{this.accountInfo.AccountType}</td></tr>
+                    <tr  key="ClientId"><td>ClientId</td><td>{this.accountInfo.ClientId}</td></tr>
+                    <tr  key="ClientKey"><td>ClientKey</td><td>{this.accountInfo.ClientKey}</td></tr>
+                    <tr  key="Currency"><td>Currency</td><td>{this.accountInfo.Currency}</td></tr>
+                </tbody>
+            </Table>
             </div>
             </Panel>
             </Col>
