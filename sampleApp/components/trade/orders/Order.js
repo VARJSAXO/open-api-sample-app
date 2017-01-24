@@ -22,7 +22,7 @@ export default class Order extends React.Component {
             Symbol:"",
             AssetType:"",
             OrderType:"Market",
-            OrderPrice:"",
+            OrderPrice:0.0,
             OrderDuration:{ DurationType:"DayOrder", },
             Amount:"",
             AccountKey:"",
@@ -60,7 +60,7 @@ export default class Order extends React.Component {
         //Setup Order Data.
         this.currentOrder.BuySell = buySell;
         this.currentOrder.AccountKey = this.accountInfo.AccountKey;
-        this.currentOrder.OrderPrice = orderprice;
+        this.currentOrder.OrderPrice = orderprice ? orderprice : 0.0;
 
         //Call to openApi.
         API.placeOrder(this.currentOrder, this.onPlaceOrderSuccess, this.onPlaceOrderFailure);
@@ -107,10 +107,11 @@ export default class Order extends React.Component {
     OnPositionUpdate(response) {
         var data = response.Data;
         for (var index in data) {
-            if(this.Positions[data[index].PositionId]) {
-                merge(this.Positions[data[index].PositionId], data[index].PositionView); // TODO: Please fix it. Don't assume flat delta'.
-            }
-            else {
+            if (this.Positions[data[index].PositionId]) {
+                if (data[index].PositionView) {
+                    merge(this.Positions[data[index].PositionId], data[index].PositionView); // TODO: Please fix it. Don't assume flat delta'.
+                }
+            } else {
                 var position = dataMapper.getPositionsData(data[index]);
                 this.Positions[position.PositionId] = position;
             }
@@ -177,7 +178,9 @@ export default class Order extends React.Component {
         this.currentOrder.Uic = response.Uic;
         this.currentOrder.Symbol = response.DisplayAndFormat.Symbol;
         this.currentOrder.AssetType = response.AssetType;
-        this.setState({updated:true, Ask:response.Quote.Ask,Bid:response.Quote.Bid});
+        this.setState({Ask:response.Quote.Ask ? response.Quote.Ask:""});
+        this.setState({Bid:response.Quote.Bid ? response.Quote.Bid:""});
+        this.setState({updated:true});
     }
 
     // Function to handle UI updates and modify currentOrderModel.
@@ -248,7 +251,7 @@ export default class Order extends React.Component {
                         </Col>
                         <Col sm={4} >
                             <ControlLabel>Bid Price</ControlLabel>
-                            <FormControl type="text" placeholder="Bid Price" value={this.state.Bid} />
+                            <FormControl type="text" placeholder="Bid Price" value={this.state.Bid} onChange={this.onChangeBidPrice.bind(this)}  />
                         </Col>
                     </Row>
                     </FormGroup>
