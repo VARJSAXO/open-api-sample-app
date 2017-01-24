@@ -20,8 +20,8 @@ export default class CustomTable extends React.Component {
               <tbody>
                 {this.props.Data ?
                   (map(this.props.Data, (item)=>
-                        <tr key={item.id}>
-                          {map(this.props.cols, (col) => <td>{item[col.key]}</td>)}
+                        <tr>
+                          {map(this.props.cols, (col) => <td className={this.props.cellcolor} >{item[col.key]}</td>)}
                         </tr>
                     )
                   ):null

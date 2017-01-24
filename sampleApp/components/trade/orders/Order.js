@@ -22,8 +22,7 @@ export default class Order extends React.Component {
             Symbol:"",
             AssetType:"",
             OrderType:"Market",
-            Ask:"",
-            Bid:"",
+            OrderPrice:"",
             OrderDuration:{ DurationType:"DayOrder", },
             Amount:"",
             AccountKey:"",
@@ -34,7 +33,9 @@ export default class Order extends React.Component {
 
         this.state = { IsSubscribedForOrders:false,
                        IsSubscribedForPositions:false,
-                       updated:false
+                       updated:false,
+                       Ask:"",
+                       Bid:"",
                      };
 
         this.onInstrumentChange = this.onInstrumentChange.bind(this);
@@ -55,10 +56,11 @@ export default class Order extends React.Component {
     }
 
     // Buy or Sell button handling. 
-    placeOrder(buySell) {
+    placeOrder(buySell, orderprice) {
         //Setup Order Data.
         this.currentOrder.BuySell = buySell;
         this.currentOrder.AccountKey = this.accountInfo.AccountKey;
+        this.currentOrder.OrderPrice = orderprice;
 
         //Call to openApi.
         API.placeOrder(this.currentOrder, this.onPlaceOrderSucces, this.onPlaceOrderFailure);
@@ -170,13 +172,12 @@ export default class Order extends React.Component {
 
     // Callback on successful inforprice call.
     onInfoPrice(response) {
-        this.currentOrder.Ask = response.Quote.Ask;
-        this.currentOrder.Bid = response.Quote.Bid;
+
         this.currentOrder.Amount = response.Quote.Amount;
         this.currentOrder.Uic = response.Uic;
         this.currentOrder.Symbol = response.DisplayAndFormat.Symbol;
         this.currentOrder.AssetType = response.AssetType;
-        this.setState({updated:true});
+        this.setState({updated:true, Ask:response.Quote.Ask,Bid:response.Quote.Bid});
     }
 
     // Function to handle UI updates and modify currentOrderModel.
@@ -193,14 +194,12 @@ export default class Order extends React.Component {
 
     // Function to handle UI updates and modify currentOrderModel.
     onChangeAskPrice(event) {
-        this.currentOrder.Ask = event.target.value;
-        this.setState({updated:true});
+        this.setState({Ask: event.target.value});
     }
 
     // Function to handle UI updates and modify currentOrderModel.
     onChangeBidPrice(event) {
-        this.currentOrder.Bid = event.target.value;
-        this.setState({updated:true});
+        this.setState({Bid: event.target.value});
     }
 
     render() {
@@ -240,11 +239,11 @@ export default class Order extends React.Component {
                         </Col>
                         <Col sm={4}>
                             <ControlLabel>Ask Price</ControlLabel>
-                            <FormControl type="text" placeholder="Ask Price" value={this.currentOrder.Ask} onChange={this.onChangeAskPrice.bind(this)}  />
+                            <FormControl type="text" placeholder="Ask Price" value={this.state.Ask} onChange={this.onChangeAskPrice.bind(this)}  />
                         </Col>
                         <Col sm={4} >
                             <ControlLabel>Bid Price</ControlLabel>
-                            <FormControl type="text" placeholder="Bid Price" value={this.currentOrder.Bid} />
+                            <FormControl type="text" placeholder="Bid Price" value={this.state.Bid} />
                         </Col>
                     </Row>
                     </FormGroup>
@@ -268,8 +267,8 @@ export default class Order extends React.Component {
                     <FormGroup>
                     <Row>
                     <Col sm={4}></Col>
-                    <Col sm={4}><Button bsStyle="primary" block  onClick={this.placeOrder.bind(this,"Buy")}>Buy</Button></Col>
-                    <Col sm={4}><Button bsStyle="primary" block  onClick={this.placeOrder.bind(this,"Sell")}>Sell</Button></Col>
+                    <Col sm={4}><Button bsStyle="primary" block  onClick={this.placeOrder.bind(this,"Buy",this.state.Ask)}>Buy</Button></Col>
+                    <Col sm={4}><Button bsStyle="primary" block  onClick={this.placeOrder.bind(this,"Sell",this.state.Bid)}>Sell</Button></Col>
                     </Row>
                     </FormGroup>
                 </div>
@@ -312,7 +311,7 @@ export default class Order extends React.Component {
                     <Tab eventKey={2} title="Positions">
                     <Row>
                     <div className="padBox">
-                        <CustomTable cols={dataMapper.getPositionColumns()} Data={this.Positions} ></CustomTable>
+                        <CustomTable cols={dataMapper.getPositionColumns()} Data={this.Positions}  ></CustomTable>
                     </div>
                     </Row>
                     </Tab>
