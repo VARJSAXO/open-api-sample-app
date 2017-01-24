@@ -2,8 +2,10 @@ import React from 'react';
 import Details from '../../Details';
 import Instruments from '../../ref/instruments/Instruments'
 import { merge, map } from 'lodash'
-import { MenuItem, Table, Button,ButtonToolbar,Checkbox,Radio,RadioGroup, Form, FormGroup,FormControl, ButtonGroup, Input,ControlLabel, Col,Row,Panel, Tabs, Tab} from 'react-bootstrap';
-import DataService from '../../utils/DataService';
+import { MenuItem, Table, Button,ButtonToolbar, Form, FormGroup,FormControl, ButtonGroup, Input,ControlLabel, Col,Row,Panel, Tabs, Tab} from 'react-bootstrap';
+import CustomTable from '../../utils/CustomTable';
+import dataMapper from '../../utils/dataMapper';
+import API from '../../utils/API';
 
 
 export default class Order extends React.Component {
@@ -30,22 +32,17 @@ export default class Order extends React.Component {
 
         };
 
-        this.state = {
-                       IsSubscribedForOrders:false,
+        this.state = { IsSubscribedForOrders:false,
                        IsSubscribedForPositions:false,
                        updated:false
                      };
 
         this.onInstrumentChange = this.onInstrumentChange.bind(this);
-        this.handleRefreshOrderClick = this.handleRefreshOrderClick.bind(this);
-        this.handleSubscribeOrdersClick = this.handleSubscribeOrdersClick.bind(this);
-
-        this.handleRefreshPositionsClick = this.handleRefreshPositionsClick.bind(this);
-        this.handleSubscribePositionsClick = this.handleSubscribePositionsClick.bind(this);
+        this.creatOrderSubscription = this.creatOrderSubscription.bind(this);
+        this.creatPositionSubscription = this.creatPositionSubscription.bind(this);
 
         this.OnOrderUpdate = this.OnOrderUpdate.bind(this);
         this.OnPositionUpdate = this.OnPositionUpdate.bind(this);
-        this.getAccountInfo = this.getAccountInfo.bind(this);
         this.onAccountInfo = this.onAccountInfo.bind(this);
         this.onInfoPrice = this.onInfoPrice.bind(this);
 
@@ -55,98 +52,87 @@ export default class Order extends React.Component {
         this.placeOrder = this.placeOrder.bind(this);
         this.onPlaceOrderSuccess = this.onPlaceOrderSuccess.bind(this);
         this.onPlaceOrderFailure = this.onPlaceOrderFailure.bind(this);
-
     }
 
-    placeOrder(buySell)
-    {
-
+    // Buy or Sell button handling. 
+    placeOrder(buySell) {
+        //Setup Order Data.
         this.currentOrder.BuySell = buySell;
         this.currentOrder.AccountKey = this.accountInfo.AccountKey;
 
-        var tranportSvc = DataService.getTransportSvc();
-        //Describes how to call OpenApi using open source Iit library.
-        tranportSvc.post('trade', 'v1/orders', null , {body:this.currentOrder})
-        .then((result) => this.onPlaceOrderSuccess(result))
-        .catch((result)=>this.onPlaceOrderFailure(result));
+        //Call to openApi.
+        API.placeOrder(this.currentOrder, this.onPlaceOrderSucces, this.onPlaceOrderFailure);
     }
 
-    onPlaceOrderSuccess(result)
-    {
+    // Calback: Order placed successfully.
+    onPlaceOrderSuccess(result) {
         console.log(result);
     }
 
-    onPlaceOrderFailure(result)
-    {
+    // Calback: Order Failure.
+    onPlaceOrderFailure(result) {
         console.log(result);
     }
 
+    // React Event: Unsubscribe or dispose on component unmount.
     componentWillUnmount() {
-        var streamingSvc = DataService.getStreamingSvc();
 
         if(this.state.IsSubscribedForOrders) {
-            streamingSvc.disposeSubscription(this.orderSubscription);
+            API.unsubscribe(this.orderSubscription);
         }
 
         if(this.state.IsSubscribedForPositions) {
-            streamingSvc.disposeSubscription(this.positionSubscription);
+             API.unsubscribe(this.positionSubscription);
         }
     }
 
+    // React Event: Get Account information on mount\loading component.
     componentDidMount() {
-        this.getAccountInfo();
+        API.getAccountInfo(this.onAccountInfo);
     }
 
+    // Calback: successfully got account information.
     onAccountInfo(response) {
-
-
         this.accountInfo = response.Data[0];
 
-        this.handleSubscribeOrdersClick();
-        this.handleSubscribePositionsClick();
+        // Create Order subscription.
+        this.creatOrderSubscription();
+        // Create Positions subscription.
+        this.creatPositionSubscription();
     }
 
-    getAccountInfo()  {
-        var tranportSvc = DataService.getTransportSvc();
-
-        //Describes how to call OpenApi using open source Iit library.
-        tranportSvc.get('port', 'v1/accounts/me',null, null)
-        .then((result) => this.onAccountInfo(result.response));
-    }
-
+    // Callback for positions and delta from streaming server.
     OnPositionUpdate(response) {
-        var positions = response.Data;
-
-        for (var index in positions) {
-
-            if(this.Positions[positions[index].PositionId]) {
-                merge(this.Positions[positions[index].PositionId], positions[index]);
+        var data = response.Data;
+        for (var index in data) {
+            if(this.Positions[data[index].PositionId]) {
+                merge(this.Positions[data[index].PositionId], data[index].PositionView); // TODO: Please fix it. Don't assume flat delta'.
             }
             else {
-                this.Positions[positions[index].PositionId] = positions[index];
+                var position = dataMapper.getPositionsData(data[index]);
+                this.Positions[position.PositionId] = position;
             }
         }
         this.setState({updated:true});
     }
 
+    // Callback for Orders and delta from streaming server.
     OnOrderUpdate(response) {
-        var orders = response.Data;
-
-        for (var index in orders) {
-
-            if(this.OpenOrders[orders[index].OrderId]) {
-                merge(this.OpenOrders[orders[index].OrderId], orders[index]);
+        var data = response.Data;
+        for (var index in data) {
+            if(this.OpenOrders[data[index].OrderId]) {
+                merge(this.OpenOrders[data[index].OrderId], data[index]);
             }
             else {
-                this.OpenOrders[orders[index].OrderId] = orders[index];
+                var order = dataMapper.getOrderData(data[index]);
+                this.OpenOrders[order.OrderId] = order;
             }
         }
         this.setState({updated:true});
-
     }
 
-    handleSubscribePositionsClick() {
-
+    // Called after getting accountInfo successfully while loading component.
+    creatPositionSubscription() {
         var subscriptionArgs = {
             "Arguments": {
                 "AccountKey": this.accountInfo.AccountKey,
@@ -154,19 +140,13 @@ export default class Order extends React.Component {
                 "FieldGroups": ["DisplayAndFormat","PositionBase","PositionView"]
             }
         }
-
-        var streamingSvc = DataService.getStreamingSvc();
-        this.positionSubscription = streamingSvc.createSubscription('port', 'v1/positions/subscriptions', subscriptionArgs , this.OnPositionUpdate);
-
+        this.positionSubscription = API.createPositionsSubscription(subscriptionArgs,this.OnPositionUpdate);
         this.setState({IsSubscribedForPositions:true});
-
     }
 
-    handleRefreshPositionsClick() {
+    // Called after getting accountInfo successfully while loading component.
+    creatOrderSubscription() {
 
-    }
-
-    handleSubscribeOrdersClick() {
         var subscriptionArgs = {
             "Arguments": {
                 "AccountKey": this.accountInfo.AccountKey,
@@ -174,81 +154,56 @@ export default class Order extends React.Component {
                 "FieldGroups": ["DisplayAndFormat"]
             }
         }
-
-        var streamingSvc = DataService.getStreamingSvc();
-        this.orderSubscription = streamingSvc.createSubscription('port', 'v1/orders/subscriptions', subscriptionArgs , this.OnOrderUpdate);
-
+        this.orderSubscription = API.creatOrderSubscription(subscriptionArgs,this.OnOrderUpdate);
         this.setState({IsSubscribedForOrders:true});
-
     }
 
+    // Get inforprice for instrument selected in UI.
+    onInstrumentChange(instrument){
+            var queryParams =  {
+                AssetType: instrument.AssetType,
+                Uic: instrument.Identifier,
+                FieldGroups: ['DisplayAndFormat', 'PriceInfo', 'Quote']
+            }
+            API.getInfoPrice(queryParams,this.onInfoPrice);
+       }
 
-    handleRefreshOrderClick(event) {
-
-        var tranportSvc = DataService.getTransportSvc();
-        //Describes how to call OpenApi using open source Iit library.
-        tranportSvc.get('port', '/v1/orders/me', null, null)
-        .then((result) => this.OnOrderUpdate(result.response))
-    }
-
+    // Callback on successful inforprice call.
     onInfoPrice(response) {
-
-
         this.currentOrder.Ask = response.Quote.Ask;
         this.currentOrder.Bid = response.Quote.Bid;
         this.currentOrder.Amount = response.Quote.Amount;
-
         this.currentOrder.Uic = response.Uic;
         this.currentOrder.Symbol = response.DisplayAndFormat.Symbol;
         this.currentOrder.AssetType = response.AssetType;
-
         this.setState({updated:true});
-
     }
 
-    onInstrumentChange(instrument){
-
-            var tranportSvc = DataService.getTransportSvc();
-            var queryParams =  {
-                      AssetType: instrument.AssetType,
-                      Uic: instrument.Identifier,
-                      FieldGroups: ['DisplayAndFormat', 'PriceInfo', 'Quote']
-                    }
-
-            //Describes how to call OpenApi using open source Iit library.
-            tranportSvc.get('trade', 'v1/infoprices',null, { queryParams: queryParams})
-            .then((result) => this.onInfoPrice(result.response))
-
-       }
-
+    // Function to handle UI updates and modify currentOrderModel.
     onSelectOrderType(event){
-
         this.currentOrder.OrderType = event.target.value;
         this.setState({updated:true});
     }
 
+    // Function to handle UI updates and modify currentOrderModel.
     onSelectOrderDuration(event) {
         this.currentOrder.OrderDuration.DurationType = event.target.value;
         this.setState({updated:true});
     }
 
-    onChangeAskPrice(event)
-    {
+    // Function to handle UI updates and modify currentOrderModel.
+    onChangeAskPrice(event) {
         this.currentOrder.Ask = event.target.value;
         this.setState({updated:true});
     }
 
-    onChangeBidPrice(event)
-    {
+    // Function to handle UI updates and modify currentOrderModel.
+    onChangeBidPrice(event) {
         this.currentOrder.Bid = event.target.value;
         this.setState({updated:true});
     }
 
-
     render() {
-        var orderSubscribeButtonText = "Subscribe";
-        var positionsSubscribeButtonText = "Subscribe";
-
         return (
           <Details Title = "Info Prices" Description={this.description}>
           <Instruments parent="true" onInstrumentSelected={this.onInstrumentChange}/>
@@ -324,22 +279,6 @@ export default class Order extends React.Component {
             <Col sm={6}>
             <Panel header="Account Info: openapi/port/v1/accounts/me" className="panel-primary">
             <div className="padBox">
-            <Table striped bordered condensed hover>
-                <thead>
-                    <tr>
-                        <th width='150'>Data</th>
-                        <th width='150'>Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr  key="AccountId" ><td>AccountId</td><td>{this.accountInfo.AccountId}</td></tr>
-                    <tr  key="AccountKey"><td>AccountKey</td><td>{this.accountInfo.AccountKey}</td></tr>
-                    <tr  key="AccountType"><td>AccountType</td><td>{this.accountInfo.AccountType}</td></tr>
-                    <tr  key="ClientId"><td>ClientId</td><td>{this.accountInfo.ClientId}</td></tr>
-                    <tr  key="ClientKey"><td>ClientKey</td><td>{this.accountInfo.ClientKey}</td></tr>
-                    <tr  key="Currency"><td>Currency</td><td>{this.accountInfo.Currency}</td></tr>
-                </tbody>
-            </Table>
             </div>
             </Panel>
             </Col>
@@ -348,117 +287,19 @@ export default class Order extends React.Component {
                 <div className="padBox">
                 <Tabs className="primary" defaultActiveKey={1} animation={false} id="noanim-tab-example">
                     <Tab eventKey={1} title="Orders">
-                    <div className="padBox">
                     <Row>
                     <div className="padBox">
-                    <Table striped bordered condensed hover>
-                        <thead>
-                            <tr>
-                                <th width='150'>OrderId</th>
-                                <th width='150'>Amount</th>
-                                <th width='150'>BuySell</th>
-                                <th width='150'>CurrentPrice</th>
-                                <th width='150'>MarketPrice</th>
-                                <th width='150'>DistanceToMarket</th>
-                                <th width='150'>AssetType</th>
-                                <th width='150'>AccountId</th>
-                                <th width='150'>Duration</th>
-                                <th width='150'>OpenOrderType</th>
-                                <th width='150'>OrderTime</th>
-                                <th width='150'>Status</th>
-                                <th width='150'>Uic</th>
-                                <th width='150'>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {map(this.OpenOrders, (order) =>
-                                    <tr  key={order.OrderId} >
-                                        <td>{order.OrderId}</td>
-                                        <td>{order.Amount}</td>
-                                        <td>{order.BuySell}</td>
-                                        <td>{order.CurrentPrice}</td>
-                                        <td>{order.MarketPrice}</td>
-                                        <td>{order.DistanceToMarket}</td>
-                                        <td>{order.AssetType}</td>
-                                        <td>{order.AccountId}</td>
-                                        <td>{order.Duration.DurationType}</td>
-                                        <td>{order.OpenOrderType}</td>
-                                        <td>{order.OrderTime}</td>
-                                        <td>{order.Status}</td>
-                                        <td>{order.Uic}</td>
-                                        <td> <ButtonToolbar>
-                                                <Button bsStyle="primary">Edit</Button>
-                                            </ButtonToolbar>
-                                        </td>
-                                    </tr>
-                                )}
-                        </tbody>
-                    </Table>
+                      <CustomTable cols={dataMapper.getOrderColumns()} Data={this.OpenOrders} ></CustomTable>
                     </div>
                     </Row>
-                    </div>
                     </Tab>
                     <Tab eventKey={2} title="Positions">
-                    <div className="padBox">
                     <Row>
                     <div className="padBox">
-                    <Table striped bordered condensed hover>
-                        <thead>
-                            <tr>
-
-                                <th width='150'>Symbol</th>
-                                <th width='150'>Currency</th>
-                                <th width='150'>Amount</th>
-                                <th width='150'>OpenPrice</th>
-                                <th width='150'>CurrentPrice</th>
-                                <th width='150'>ProfitLossOnTrade</th>
-                                <th width='150'>ProfitLossOnTradeInBaseCurrency</th>
-                                <th width='150'>TradeCostsTotal</th>
-                                <th width='150'>TradeCostsTotalInBaseCurrency</th>
-                                <th width='150'>Exposure</th>
-                                <th width='150'>ExposureInBaseCurrency</th>
-                                <th width='150'>SpotDate</th>
-                                <th width='150'>Status</th>
-                                <th width='150'>ValueDate</th>
-
-                                <th width='150'>NetPositionId</th>
-                                <th width='150'>AccountId</th>
-                                <th width='150'>AssetType</th>
-                                <th width='150'>ClientId</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {map(this.Positions, (position) =>
-                                    <tr key={position.PositionId}>
-
-                                        <td>{position.DisplayAndFormat.Symbol}</td>
-                                        <td>{position.DisplayAndFormat.Currency}</td>
-
-                                        <td>{position.PositionBase.Amount}</td>
-                                        <td>{position.PositionBase.OpenPrice}</td>
-                                        <td>{position.PositionView.CurrentPrice}</td>
-                                        <td>{position.PositionView.ProfitLossOnTrade}</td>
-                                        <td>{position.PositionView.ProfitLossOnTradeInBaseCurrency}</td>
-                                        <td>{position.PositionView.TradeCostsTotal}</td>
-                                        <td>{position.PositionView.TradeCostsTotalInBaseCurrency}</td>
-                                        <td>{position.PositionView.Exposure}</td>
-                                        <td>{position.PositionView.ExposureInBaseCurrency}</td>
-                                        <td>{position.PositionBase.SpotDate}</td>
-                                        <td>{position.PositionBase.Status}</td>
-                                        <td>{position.PositionBase.ValueDate}</td>
-
-                                        <td>{position.NetPositionId}</td>
-                                        <td>{position.PositionBase.AccountId}</td>
-                                        <td>{position.PositionBase.AssetType}</td>
-                                        <td>{position.PositionBase.ClientId}</td>
-
-                                    </tr>
-                                )}
-                        </tbody>
-                    </Table>
-                      </div>
+                        <CustomTable cols={dataMapper.getPositionColumns()} Data={this.Positions} ></CustomTable>
+                    </div>
                     </Row>
-                    </div></Tab>
+                    </Tab>
                 </Tabs>
                 </div>
             </Row>

@@ -83,5 +83,49 @@ export default {
             }
         }
         DataService.subscribe(data, successCallback, errorCallback)
+    },
+    getAccountInfo:(cbSuccess,cbError) => {
+        debugger;
+
+        var tranportSvc = DataService.getTransportSvc();
+
+        //Describes how to call OpenApi using open source Iit library.
+        tranportSvc.get('port', 'v1/accounts/me', null, null)
+        .then((result) => { if(cbSuccess) cbSuccess(result.response)})
+        .catch((result)=> { if(cbError) cbError(result) });
+    },
+
+    unsubscribe:(subscription) =>{
+
+        var streamingSvc = DataService.getStreamingSvc();
+            streamingSvc.disposeSubscription(subscription);
+    },
+
+    placeOrder(order,cbSuccess,cbError) {
+        var tranportSvc = DataService.getTransportSvc();
+
+        //Describes how to call OpenApi using open source Iit library.
+        tranportSvc.post('trade', 'v1/orders', null , {body:order})
+        .then((result) => { if(cbSuccess) cbSuccess(result.response)})
+        .catch((result)=> { if(cbError) cbError(result) });
+    },
+
+    creatOrderSubscription:(subscriptionArgs,cbSuccess,cbError)=>{
+        var streamingSvc = DataService.getStreamingSvc();
+        return streamingSvc.createSubscription('port', 'v1/orders/subscriptions', subscriptionArgs, cbSuccess, cbError);
+    },
+
+    createPositionsSubscription:(subscriptionArgs,cbSuccess,cbError)=>{
+        var streamingSvc = DataService.getStreamingSvc();
+        return streamingSvc.createSubscription('port', 'v1/positions/subscriptions', subscriptionArgs, cbSuccess, cbError);
+    },
+
+    getInfoPrice:(queryParams,cbSuccess,cbError)=>{
+        var tranportSvc = DataService.getTransportSvc();
+
+        //Describes how to call OpenApi using open source Iit library.
+        tranportSvc.get('trade', 'v1/infoprices',null, { queryParams: queryParams})
+        .then((result) => { if(cbSuccess) cbSuccess(result.response)})
+        .catch((result)=> { if(cbError) cbError(result) });
     }
 }

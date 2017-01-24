@@ -1,38 +1,33 @@
-var Table = React.createClass({
+import React from 'react';
+import { merge, map } from 'lodash'
+import { Table } from 'react-bootstrap';
 
-    render: function() {
-        var headerComponents = this.generateHeaders(),
-            rowComponents = this.generateRows();
+export default class CustomTable extends React.Component {
+  constructor(props){
+    super(props);
 
-        return (
-            <table>
-                <thead> {headerComponents} </thead>
-                <tbody> {rowComponents} </tbody>
-            </table>
-        );
-    },
+  }
 
-    generateHeaders: function() {
-        var cols = this.props.cols;  // [{key, label}]
-
-        // generate our header (th) cell components
-        return cols.map(function(colData) {
-            return <th key={colData.key}> {colData.label} </th>;
-        });
-    },
-
-    generateRows: function() {
-        var cols = this.props.cols,  // [{key, label}]
-            data = this.props.data;
-
-        return data.map(function(item) {
-            // handle the column data within each row
-            var cells = cols.map(function(colData) {
-
-                // colData.key might be "firstName"
-                return <td> {item[colData.key]} </td>;
-            });
-            return <tr key={item.id}> {cells} </tr>;
-        });
-    }
-});
+  render() {
+      return (
+          <Table striped bordered condensed hover>
+              <thead>
+              <tr>
+              {map(this.props.cols, (col) =>
+                        <th key={col.key} > {col.label} </th>)}
+                        </tr>
+              </thead>
+              <tbody>
+                {this.props.Data ?
+                  (map(this.props.Data, (item)=>
+                        <tr key={item.id}>
+                          {map(this.props.cols, (col) => <td>{item[col.key]}</td>)}
+                        </tr>
+                    )
+                  ):null
+                }
+              </tbody>
+          </Table>
+      );
+  }
+}
