@@ -10,6 +10,10 @@
   left: 0;
 }
 
+.navItems a {
+  color: white !important;
+}
+
 .SideBar-Navs {
   list-style-type: none;
   margin: 0;
@@ -28,7 +32,7 @@
 .DetailsHeader {
   box-sizing: border-box;
   box-shadow: none;
-  padding: 48px 48px 32px 48px;
+  padding: 48px 48px 32px 27px;
   height: 100px;
   background-color: #1976D2;
   background: -webkit-linear-gradient(305deg,#A9A9A9,#42A5F5);
@@ -76,4 +80,8 @@
 
 .highlight {
   color: red;
+}
+
+.pullRight {
+   margin-left: 100px !important;
 }

@@ -8,18 +8,19 @@ export default class TopBar extends React.Component {
 			<Navbar inverse collapseOnSelect>
 				<Navbar.Header>
 		      		<Navbar.Brand>
-		        		<a href="https://developer.saxobank.com/sim/openapi/portal/" target="_blank">OpenAPI</a>
+		      			Open Api - Feature Samples
 		      		</Navbar.Brand>
-		      		<Navbar.Toggle />
 	    		</Navbar.Header>
 	    		<Navbar.Collapse>
 	    			<Nav pullRight>
-				        <NavItem eventKey={1} href="#">LOGIN</NavItem>
-				        <NavItem eventKey={1}> <Link to = "home"> ACCESS TOKEN </Link> </NavItem>
+				        <NavItem eventKey={1} href="#" className="navItems"> LOGIN</NavItem>
+				        <NavItem eventKey={2} className="navItems"><Link to="home">ACCESS TOKEN </Link></NavItem>
+				        <Navbar.Brand className="pullRight">
+				        	<a  href="https://developer.saxobank.com/sim/openapi/portal/" target="_blank"> Developer's Portal </a>
+				        </Navbar.Brand>
 				    </Nav>
 	        	</Navbar.Collapse>
 			</Navbar>
 		)
 	}
 }
-

@@ -83,11 +83,18 @@ export default class InfoPrices extends React.Component {
 	}
 
 	subscribeInstruments () {
-		var uics = transform(this.instruments, ((concat, instrument) => concat['uic'] = concat['uic'] ? concat['uic'] +','+ instrument.Uic : instrument.Uic  ), {});
-		API.subscribeInfoPrices({ Uics: uics['uic'], AssetType: this.assetType }, this.updateSubscribedInstruments);
-		this.setState({
-			instrumentsSubscribed: true,
-		});
+		if(!this.state.instrumentsSubscribed) {
+			var uics = transform(this.instruments, ((concat, instrument) => concat['uic'] = concat['uic'] ? concat['uic'] +','+ instrument.Uic : instrument.Uic  ), {});
+			API.subscribeInfoPrices({ Uics: uics['uic'], AssetType: this.assetType }, this.updateSubscribedInstruments);
+			this.setState({
+				instrumentsSubscribed: true,
+			});
+		} else {
+			API.disposeSubscription(() => console.log("disposed subscription successfully"), () => console.log("Error disposing subscription"));
+			this.setState({
+				instrumentsSubscribed: false,
+			});
+		}
 	}
 
 	fetchInstrumentsData () {

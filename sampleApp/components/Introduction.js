@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormGroup, FormControl, Panel, Button} from 'react-bootstrap';
+import { FormGroup, FormControl, Panel, Button, Alert} from 'react-bootstrap';
 import Details from './Details';
 import DataService from './utils/DataService'
 
@@ -14,7 +14,16 @@ export default class Home extends React.Component{
         return (
             <Details Title="Welcome to the Saxo Bank Open Api - Feature Samples" Description={this.description}>
                 <div className="padBox">
-                    <h2> <small>Please login or set access token from above to have access to application</small> </h2>
+                    <h2> <small>This application contains a number of samples to illustrate how to use the different resources and endpoints available in the Saxo Bank OpenAPI.
+                        <br/>
+                        All samples require a valid access token, which you may obtain from the developer portal
+                    </small> </h2>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <Alert bsStyle="warning">
+                        Some responses may return no samples, depending upon actual market data entitlements and the configuration of the logged in user.
+                    </Alert>
                 </div>
             </Details>
         );

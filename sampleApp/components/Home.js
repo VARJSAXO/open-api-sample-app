@@ -27,8 +27,8 @@ export default class Home extends React.Component{
         return (
             <Details Title="Set Access Token" Description={this.description}>
                 <div className="padBox">
-                    <h2> <small>Please copy authorization token from <a href="https://developer.saxobank.com/sim/openapi/portal/" target="_blank">Developer's Portal</a>.</small> </h2>
                     <h3> Set Access Token </h3>
+                    <h2> <small>Please copy authorization token from <a href="https://developer.saxobank.com/sim/openapi/portal/" target="_blank">Developer's Portal</a>.</small> </h2>
                     <Panel header="Access Token" bsStyle="primary">
                         <form>
                             <FormGroup controlId="formControlsTextarea">

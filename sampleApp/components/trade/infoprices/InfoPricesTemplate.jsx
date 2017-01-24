@@ -7,7 +7,7 @@ export default (props) => {
 		<div className="padBox">
 		{props.instrumentSelected ? (
 			<ButtonToolbar>
-				<Button bsStyle="primary" onClick={props.subscribeInstruments} disabled={props.instrumentsSubscribed}>Subscribe</Button>
+				<Button bsStyle="primary" onClick={props.subscribeInstruments}>{props.instrumentsSubscribed ? 'Unsubscribe': 'Subscribe'}</Button>
 	 			<Button bsStyle="primary" onClick={props.fetchInstrumentsData} disabled={props.instrumentsSubscribed}>Get Prices</Button>
 	 		</ButtonToolbar>
 	    ): null }

@@ -5,15 +5,21 @@ import { isEmpty } from 'lodash'
 export default (props) => {
     var instruments = props.instrumentList.map((instrument) =>  <MenuItem eventKey = {instrument} key = {instrument.Symbol}> {instrument.Description} </MenuItem> );
     var assetTypes = props.assetTypes.map((assetType) => <MenuItem eventKey = {assetType} key = {assetType}> {assetType} </MenuItem> );
-    var headers = !isEmpty(props.instrumentList) ? Object.keys(props.instrumentList[0]).map((key) => <th key={key}> {key} </th>) : null;
+    var headers = <tr>
+    			    <th>Identifier / Uic</th>
+    			    <th>Symbol</th>
+			        <th>AssetType</th>
+			        <th>Instrument Name</th>
+			        <th>ExchangeId</th>
+		      	</tr>
+
 	var data =  !isEmpty(props.instrumentList) ? props.instrumentList.map((instrument) =>
 			      <tr key={instrument.Uic}>
-			        <td>{instrument.Description}</td>
+			      	<td>{instrument.Identifier}</td>
+			      	<td>{instrument.Symbol}</td>
 			        <td>{instrument.AssetType}</td>
+			        <td>{instrument.Description}</td>
 			        <td>{instrument.ExchangeId}</td>
-			        <td>{instrument.Identifier}</td>
-			        <td>{instrument.SummaryType}</td>
-			        <td>{instrument.Symbol}</td>
 			      </tr>
 				) : null;
 	return (
@@ -33,7 +39,7 @@ export default (props) => {
 			        	<br/>
 				        <Table striped bordered condensed hover>
 						    <thead>
-						      <tr> {headers} </tr>
+						     {headers}
 						    </thead>
 						    <tbody> {data} </tbody>
 						</Table>

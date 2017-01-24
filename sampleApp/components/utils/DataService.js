@@ -16,7 +16,8 @@ export default {
 
     getData (params, successCallback, errorCallback) {
         this.transport[params.method](params.serviceGroup, params.endPoint, null, {
-            queryParams: params.queryParams
+            queryParams: params.queryParams,
+            body: params.body
         })
         .then((result) => successCallback(result.response))
         .catch(errorCallback);
@@ -28,7 +29,10 @@ export default {
 
     subscribe (params, successCallback, errorCallback) {
         this.subscription = this.streaming.createSubscription(params.serviceGroup, params.endPoint, params.queryParams , successCallback, errorCallback)
-        this.streaming.subscribe(this.subscription);
+    },
+
+    disposeSubscription () {
+        this.streaming.disposeSubscription(this.subscription);
     },
 
     getTransportSvc() {

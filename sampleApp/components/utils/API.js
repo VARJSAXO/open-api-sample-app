@@ -16,7 +16,7 @@ export default {
     },
     // Fetch Info Prices for a particular instrument based on AssetType and Uic. eg.
     // Eg: Query Params : { AssetType: 'FxSpot', Uic: 21 }
-    getInfoPrices:  (queryParams, successCallback, errorCallback) => {
+    getInfoPrices: (queryParams, successCallback, errorCallback) => {
         var data = {
             method: 'get',
             serviceGroup: 'trade',
@@ -27,7 +27,7 @@ export default {
     },
     // Fetch Info Prices for a set of instruments based on AssetType and Uics. eg.
     // Eg: Query Params : { AssetType: 'FxSpot', Uic: 21,2 }
-    getInfoPricesList:  (queryParams, successCallback, errorCallback) => {
+    getInfoPricesList: (queryParams, successCallback, errorCallback) => {
         var data = {
             method: 'get',
             serviceGroup: 'trade',
@@ -45,9 +45,8 @@ export default {
             RefreshRate: 5
         }
     */
-    subscribeInfoPrices:  (instrumentData, successCallback, errorCallback) => {
+    subscribeInfoPrices: (instrumentData, successCallback, errorCallback) => {
         var data = {
-            method: 'post',
             serviceGroup: 'trade',
             endPoint: 'v1/infoPrices/subscriptions',
             queryParams: {
@@ -69,9 +68,8 @@ export default {
             RefreshRate: 5
         }
     */
-    subscribePrices:  (instrumentData, successCallback, errorCallback) => {
+    subscribePrices: (instrumentData, successCallback, errorCallback) => {
         var data = {
-            method: 'post',
             serviceGroup: 'trade',
             endPoint: 'v1/Prices/subscriptions',
             queryParams: {
@@ -83,5 +81,50 @@ export default {
             }
         }
         DataService.subscribe(data, successCallback, errorCallback)
+    },
+    // Delete subscription
+    disposeSubscription: (successCallback, errorCallback) => {
+        DataService.disposeSubscription(successCallback, errorCallback)
+    },
+    // Fetch Account details.
+    getAccountInfo: (successCallback, errorCallback) => {
+        var data = {
+            method: 'get',
+            serviceGroup: 'port',
+            endPoint: 'v1/accounts/me',
+            queryParams: null
+        };
+        DataService.getData(data, successCallback, errorCallback);
+    },
+    // Place order
+    placeOrder: (order, successCallback, errorCallback) => {
+        var data = {
+            method: 'post',
+            serviceGroup: 'trade',
+            endPoint: 'v1/orders',
+            queryParams: null,
+            body: order
+        };
+        //Describes how to call OpenApi using open source Iit library.
+        DataService.getData(data, successCallback, errorCallback);
+    },
+    // Create Order Subscription.
+    createOrderSubscription: (subscriptionArgs, successCallback, errorCallback) => {
+        var data = {
+            serviceGroup: 'port',
+            endPoint: 'v1/orders/subscriptions',
+            queryParams: subscriptionArgs
+        };
+        DataService.subscribe(data, successCallback, errorCallback);
+    },
+
+    // Create Positions Subscription.
+    createPositionsSubscription: (subscriptionArgs, successCallback, errorCallback) => {
+        var data = {
+            serviceGroup: 'port',
+            endPoint: 'v1/positions/subscriptions',
+            queryParams: subscriptionArgs
+        };
+        DataService.subscribe(data, successCallback, errorCallback);
     }
 }
