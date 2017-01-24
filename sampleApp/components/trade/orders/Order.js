@@ -202,6 +202,11 @@ export default class Order extends React.Component {
         this.setState({Bid: event.target.value});
     }
 
+    onChangeAmount(event) {
+        this.currentOrder.Amount = event.target.value;
+        this.setState({updated:true});
+    }
+
     render() {
         return (
           <Details Title = "Info Prices" Description={this.description}>
@@ -260,7 +265,7 @@ export default class Order extends React.Component {
                         </Col>
                         <Col sm={4}>
                             <ControlLabel>Amount</ControlLabel>
-                            <FormControl type="text" placeholder="Amount" value={this.currentOrder.Amount} />
+                            <FormControl type="text" placeholder="Amount" value={this.currentOrder.Amount} onChange={this.onChangeAmount.bind(this)} />
                         </Col>
                     </Row>
                     </FormGroup>
