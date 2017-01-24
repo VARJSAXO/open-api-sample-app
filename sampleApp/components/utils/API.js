@@ -40,7 +40,7 @@ export default {
      Eg: Query Params : {
             Arguments: {
                 AssetType: 'FxSpot',
-                Uics: 21,2,
+                Uics: 21,2
             },
             RefreshRate: 5
         }
@@ -64,7 +64,7 @@ export default {
      Eg: Query Params : {
             Arguments: {
                 AssetType: 'FxSpot',
-                Uic: 21,
+                Uic: 21
             },
             RefreshRate: 5
         }
