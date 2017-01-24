@@ -5,14 +5,6 @@ import { isEmpty } from 'lodash'
 export default (props) => {
     var instruments = props.instrumentList.map((instrument) =>  <MenuItem eventKey = {instrument} key = {instrument.Symbol}> {instrument.Description} </MenuItem> );
     var assetTypes = props.assetTypes.map((assetType) => <MenuItem eventKey = {assetType} key = {assetType}> {assetType} </MenuItem> );
-    var headers = <tr>
-    			    <th>Identifier / Uic</th>
-    			    <th>Symbol</th>
-			        <th>AssetType</th>
-			        <th>Instrument Name</th>
-			        <th>ExchangeId</th>
-		      	</tr>
-
 	var data =  !isEmpty(props.instrumentList) ? props.instrumentList.map((instrument) =>
 			      <tr key={instrument.Uic}>
 			      	<td>{instrument.Identifier}</td>
@@ -25,21 +17,27 @@ export default (props) => {
 	return (
 	    <div className="padBox">
 		    <ButtonToolbar>
-		        <DropdownButton bsStyle="primary" title="Select Asset Type" id="dropdown-size-large" onSelect = {props.onAssetTypeSelectionChange}>
+		        <DropdownButton bsStyle="primary" title={props.assetType} id="dropdown-size-large" onSelect = {props.onAssetTypeSelected} >
 		        	{assetTypes}
 		        </DropdownButton>
 		        { props.hasInstruments ?
 		        	props.parent ?
-			        (<DropdownButton bsStyle="primary" title="Select Instruments" id="dropdown-size-large" onSelect = {props.onInstrumentSelected}>
+			        (<DropdownButton bsStyle="primary" title={props.instrument} id="dropdown-size-large" onSelect = {props.onInstrumentSelected}>
 						{instruments}
 			        </DropdownButton>) :
-			        ( <div>
+			        (<div>
 			        	<br/>
 			        	<br/>
 			        	<br/>
 				        <Table striped bordered condensed hover>
 						    <thead>
-						     {headers}
+						     	<tr>
+				    			    <th>Identifier / Uic</th>
+				    			    <th>Symbol</th>
+							        <th>AssetType</th>
+							        <th>Instrument Name</th>
+							        <th>ExchangeId</th>
+					      		</tr>
 						    </thead>
 						    <tbody> {data} </tbody>
 						</Table>
