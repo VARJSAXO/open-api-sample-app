@@ -28,7 +28,7 @@ export default class SideBar extends React.Component {
 			<div className = "SideBar">
 				<ListGroup className = "SideBar-Navs">
 				    <ListGroupItem>
-				    	<Link to = "home"> Home </Link>
+				    	<Link to = "intro"> Introduction </Link>
 				    </ListGroupItem>
 				    <ListGroupItem href = "#" onClick = { this.handleCollapse.bind(this,'trade') }>
 						Trade Service Group

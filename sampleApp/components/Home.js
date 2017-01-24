@@ -8,7 +8,7 @@ export default class Home extends React.Component{
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.createTransport = this.createTransport.bind(this);
-        this.description = "Open API provides access to all of the resources and functionality required to build a high performance multi-asset trading platform. It is a sample application to explain different functionalities and features offered by OpenAPIs. OpenAPIs require authorization token."
+        this.description = "OpenAPIs require authorization token to authenticate user."
         this.state = { token: '' };
     }
 
@@ -25,7 +25,7 @@ export default class Home extends React.Component{
 
     render () {
         return (
-            <Details Title="Welcome to the Saxo Bank Open Api - Feature Samples" Description={this.description}>
+            <Details Title="Set Access Token" Description={this.description}>
                 <div className="padBox">
                     <h2> <small>Please copy authorization token from <a href="https://developer.saxobank.com/sim/openapi/portal/" target="_blank">Developer's Portal</a>.</small> </h2>
                     <h3> Set Access Token </h3>
