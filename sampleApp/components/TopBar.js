@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router'
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 
 export default class TopBar extends React.Component {
@@ -14,6 +15,7 @@ export default class TopBar extends React.Component {
 	    		<Navbar.Collapse>
 	    			<Nav pullRight>
 				        <NavItem eventKey={1} href="#">LOGIN</NavItem>
+				        <NavItem eventKey={1}> <Link to = "home"> ACCESS TOKEN </Link> </NavItem>
 				    </Nav>
 	        	</Navbar.Collapse>
 			</Navbar>

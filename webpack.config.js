@@ -1,7 +1,7 @@
-var fs = require('fs');
-var path = require('path');
-var webpack = require('webpack');
-var CODE = __dirname+'/sampleApp';
+const fs = require('fs');
+const path = require('path');
+const webpack = require('webpack');
+const CODE = __dirname+'/sampleApp';
 
 module.exports = {
 
@@ -23,17 +23,20 @@ module.exports = {
   module: {
     loaders: [
       { test: /\.json$/, loader: 'json-loader' },
-      { test: /\.(js|jsx)$/, exclude: /node_modules/, loader: 'babel-loader', 
+      { test: /\.(js|jsx)$/, exclude: /node_modules/, loader: 'babel-loader',
         query: {
             presets:['es2015','react']
-        } 
+        }
       }
     ]
   },
 
   plugins: [
     new webpack.optimize.CommonsChunkPlugin('shared.js')
-  ]
+  ],
+  resolve: {
+    extensions: ['', '.js', '.jsx']
+  },
 
 };
 
