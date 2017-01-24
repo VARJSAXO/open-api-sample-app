@@ -22,7 +22,7 @@ export default class Order extends React.Component {
             Symbol:"",
             AssetType:"",
             OrderType:"Market",
-            OrderPrice:"",
+            OrderPrice:0.0,
             OrderDuration:{ DurationType:"DayOrder", },
             Amount:"",
             AccountKey:"",
@@ -60,7 +60,7 @@ export default class Order extends React.Component {
         //Setup Order Data.
         this.currentOrder.BuySell = buySell;
         this.currentOrder.AccountKey = this.accountInfo.AccountKey;
-        this.currentOrder.OrderPrice = orderprice;
+        this.currentOrder.OrderPrice = orderprice ? orderprice : 0.0;
 
         //Call to openApi.
         API.placeOrder(this.currentOrder, this.onPlaceOrderSucces, this.onPlaceOrderFailure);
@@ -108,7 +108,8 @@ export default class Order extends React.Component {
         var data = response.Data;
         for (var index in data) {
             if(this.Positions[data[index].PositionId]) {
-                merge(this.Positions[data[index].PositionId], data[index].PositionView); // TODO: Please fix it. Don't assume flat delta'.
+                if(data[index].PositionView)
+                    merge(this.Positions[data[index].PositionId], data[index].PositionView); // TODO: Please fix it. Don't assume flat delta'.
             }
             else {
                 var position = dataMapper.getPositionsData(data[index]);
@@ -177,7 +178,11 @@ export default class Order extends React.Component {
         this.currentOrder.Uic = response.Uic;
         this.currentOrder.Symbol = response.DisplayAndFormat.Symbol;
         this.currentOrder.AssetType = response.AssetType;
-        this.setState({updated:true, Ask:response.Quote.Ask,Bid:response.Quote.Bid});
+
+        this.setState({Ask:response.Quote.Ask ? response.Quote.Ask:""});
+        this.setState({Ask:response.Quote.Bid ? response.Quote.Bid:""});
+       
+        this.setState({updated:true});
     }
 
     // Function to handle UI updates and modify currentOrderModel.
