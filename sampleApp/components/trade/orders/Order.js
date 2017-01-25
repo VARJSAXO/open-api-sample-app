@@ -2,7 +2,7 @@ import React from 'react';
 import Details from '../../Details';
 import Instruments from '../../ref/instruments/Instruments'
 import { merge, map } from 'lodash'
-import { MenuItem, Table, Button,ButtonToolbar, Form, FormGroup,FormControl, ButtonGroup, Input,ControlLabel, Col,Row,Panel, Tabs, Tab} from 'react-bootstrap';
+import { MenuItem, Table, Button, ButtonToolbar, Form, FormGroup,FormControl, ButtonGroup, Input,ControlLabel, Col,Row,Panel, Tabs, Tab} from 'react-bootstrap';
 import CustomTable from '../../utils/CustomTable';
 import dataMapper from '../../utils/dataMapper';
 import API from '../../utils/API';
@@ -19,12 +19,11 @@ export default class Order extends React.Component {
         this.accountInfo =  {};
         this.currentOrder = {
             Uic:"",
-            Symbol:"",
             AssetType:"",
             OrderType:"Market",
             OrderPrice:0.0,
             OrderDuration:{ DurationType:"DayOrder", },
-            Amount:"",
+            Amount:0,
             AccountKey:"",
             BuySell:"",
             OrderRelation:"StandAlone"
@@ -34,8 +33,10 @@ export default class Order extends React.Component {
         this.state = { IsSubscribedForOrders:false,
                        IsSubscribedForPositions:false,
                        updated:false,
-                       Ask:"",
-                       Bid:"",
+                       Ask:0.0,
+                       Bid:0.0,
+                       Symbol:"",
+                       orderRequestParams:""
                      };
 
         this.onInstrumentChange = this.onInstrumentChange.bind(this);
@@ -53,17 +54,24 @@ export default class Order extends React.Component {
         this.placeOrder = this.placeOrder.bind(this);
         this.onPlaceOrderSuccess = this.onPlaceOrderSuccess.bind(this);
         this.onPlaceOrderFailure = this.onPlaceOrderFailure.bind(this);
+
+        this.prettyPrint = this.prettyPrint.bind(this);
     }
 
-    // Buy or Sell button handling. 
-    placeOrder(buySell, orderprice) {
-        //Setup Order Data.
-        this.currentOrder.BuySell = buySell;
-        this.currentOrder.AccountKey = this.accountInfo.AccountKey;
-        this.currentOrder.OrderPrice = orderprice ? orderprice : 0.0;
+    prettyPrint(obj) {
+        if (!obj) return '';
+        return JSON.stringify(obj, null, 3)
+        .replace(/&/g, '&amp;')
+        .replace(/\\"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;') + '\n';
+    }
 
+
+    // Buy or Sell button handling. 
+    placeOrder() {
         //Call to openApi.
-        API.placeOrder(this.currentOrder, this.onPlaceOrderSucces, this.onPlaceOrderFailure);
+        API.placeOrder(JSON.parse(this.state.orderRequestParams), this.onPlaceOrderSucces, this.onPlaceOrderFailure);
     }
 
     // Calback: Order placed successfully.
@@ -96,6 +104,8 @@ export default class Order extends React.Component {
     // Calback: successfully got account information.
     onAccountInfo(response) {
         this.accountInfo = response.Data[0];
+
+        this.currentOrder.AccountKey = this.accountInfo.AccountKey;
 
         // Create Order subscription.
         this.creatOrderSubscription();
@@ -176,45 +186,54 @@ export default class Order extends React.Component {
 
         this.currentOrder.Amount = response.Quote.Amount;
         this.currentOrder.Uic = response.Uic;
-        this.currentOrder.Symbol = response.DisplayAndFormat.Symbol;
         this.currentOrder.AssetType = response.AssetType;
-
-        this.setState({Ask:response.Quote.Ask ? response.Quote.Ask:""});
-        this.setState({Ask:response.Quote.Bid ? response.Quote.Bid:""});
-       
-        this.setState({updated:true});
+        this.currentOrder.OrderPrice = response.Quote.Ask ? response.Quote.Ask:0.0;
+        this.setState({Ask:response.Quote.Ask ? response.Quote.Ask:0.0,
+                       Bid:response.Quote.Bid ? response.Quote.Bid:0.0,
+                       Symbol:response.DisplayAndFormat.Symbol,
+                       orderRequestParams:this.prettyPrint(this.currentOrder)});
     }
 
     // Function to handle UI updates and modify currentOrderModel.
     onSelectOrderType(event){
         this.currentOrder.OrderType = event.target.value;
-        this.setState({updated:true});
+        this.setState({orderRequestParams:this.prettyPrint(this.currentOrder)});
     }
 
     // Function to handle UI updates and modify currentOrderModel.
     onSelectOrderDuration(event) {
         this.currentOrder.OrderDuration.DurationType = event.target.value;
-        this.setState({updated:true});
+        this.setState({orderRequestParams:this.prettyPrint(this.currentOrder)});
     }
 
-    // Function to handle UI updates and modify currentOrderModel.
-    onChangeAskPrice(event) {
-        this.setState({Ask: event.target.value});
-    }
-
-    // Function to handle UI updates and modify currentOrderModel.
-    onChangeBidPrice(event) {
-        this.setState({Bid: event.target.value});
-    }
 
     onChangeAmount(event) {
         this.currentOrder.Amount = event.target.value;
-        this.setState({updated:true});
+        this.setState({orderRequestParams:this.prettyPrint(this.currentOrder)});
+    }
+
+    onSelectBuySell(event)
+    {
+        this.currentOrder.BuySell = event.target.value;
+        this.currentOrder.OrderPrice = this.currentOrder.BuySell == "Buy" ? this.state.Ask:this.state.Bid;
+        this.setState({orderRequestParams:this.prettyPrint(this.currentOrder)});
+    }
+
+    onChangeOrderPrice(event)
+    {
+        this.currentOrder.OrderPrice = event.target.value;
+        this.setState({orderRequestParams:this.prettyPrint(this.currentOrder)});
+    }
+
+    onChangeRequestParams(event)
+    {
+        this.setState({orderRequestParams:event.target.value});
     }
 
     render() {
+
         return (
-          <Details Title = "Info Prices" Description={this.description}>
+          <Details Title = "Orders" Description={this.description}>
           <Instruments parent="true" onInstrumentSelected={this.onInstrumentChange}/>
           <div className="padBox">
             <Row>
@@ -224,77 +243,79 @@ export default class Order extends React.Component {
                 <div className="padBox">
                     <FormGroup>
                     <Row>
-                        <Col sm={4} >
-                            <ControlLabel>Uic</ControlLabel>
-                            <FormControl readOnly="readOnly" type="text" placeholder="Uic" value={this.currentOrder.Uic} />
+                        <Col sm={3}>
+                            <ControlLabel >Instrument (UIC: {this.currentOrder.Uic})</ControlLabel>
+                            <FormControl readOnly="readOnly" type="text" placeholder="Symbol" value={this.state.Symbol} />
                         </Col>
-                        <Col sm={4}>
-                            <ControlLabel >Instrument</ControlLabel>
-                            <FormControl readOnly="readOnly" type="text" placeholder="Symbol" value={this.currentOrder.Symbol} />
-                        </Col>
-                        <Col sm={4}>
+                        <Col sm={3}>
                             <ControlLabel >AssetType</ControlLabel>
                             <FormControl readOnly="readOnly" type="text" placeholder="AssetType" value={this.currentOrder.AssetType} />
                         </Col>
-                    </Row>
-                    </FormGroup>
-                    <FormGroup>
-                    <Row>
-                        <Col sm={4}>
-                            <ControlLabel>Order Type</ControlLabel>
-                            <FormControl componentClass="select" value={this.currentOrder.OrderType} onChange={this.onSelectOrderType} >
-                                <option value="Market">Market</option>
-                                <option value="Limit">Limit</option>
-                            </FormControl>
-                        </Col>
-                        <Col sm={4}>
+                        <Col sm={3}>
                             <ControlLabel>Ask Price</ControlLabel>
-                            <FormControl type="text" placeholder="Ask Price" value={this.state.Ask} onChange={this.onChangeAskPrice.bind(this)}  />
+                            <FormControl type="text" readOnly="readOnly" placeholder="Ask Price" value={this.state.Ask}/>
                         </Col>
-                        <Col sm={4} >
+                        <Col sm={3} >
                             <ControlLabel>Bid Price</ControlLabel>
-                            <FormControl type="text" placeholder="Bid Price" value={this.state.Bid} />
+                            <FormControl type="text" readOnly="readOnly" placeholder="Bid Price" value={this.state.Bid}/>
                         </Col>
                     </Row>
                     </FormGroup>
                     <FormGroup>
                     <Row>
-                        <Col sm={4} >
-                            <ControlLabel>Order Duration</ControlLabel>
-                            <FormControl componentClass="select" value={this.currentOrder.Duration} onChange={this.onSelectOrderDuration}>
-                                <option value="DayOrder">DayOrder</option>
-                                <option value="GoodTillCancel">GoodTillCancel</option>
-                                <option value="GoodTillDate">GoodTillDate</option>
-                                <option value="ImmediateOrCancel">ImmediateOrCancel</option>
-                            </FormControl>
-                        </Col>
-                        <Col sm={4}>
-                            <ControlLabel>Amount</ControlLabel>
-                            <FormControl type="text" placeholder="Amount" value={this.currentOrder.Amount} onChange={this.onChangeAmount.bind(this)} />
-                        </Col>
+                    <Col sm={3}>
+                        <ControlLabel>BuySell</ControlLabel>
+                        <FormControl componentClass="select" value={this.currentOrder.BuySell} onChange={this.onSelectBuySell.bind(this)} >
+                            <option value="Buy">Buy</option><option value="Sell">Sell</option>
+                        </FormControl>
+                    </Col>
+                    <Col sm={3}>
+                        <ControlLabel>Order Price</ControlLabel>
+                        <FormControl type="text"  placeholder="Order Price" value={this.currentOrder.OrderPrice} onChange={this.onChangeOrderPrice.bind(this)}  />
+                    </Col>
+                    <Col sm={3}>
+                        <ControlLabel>Order Amount</ControlLabel>
+                        <FormControl type="text" placeholder="Amount" value={this.currentOrder.Amount} onChange={this.onChangeAmount.bind(this)} />
+                    </Col>
                     </Row>
                     </FormGroup>
                     <FormGroup>
                     <Row>
-                    <Col sm={4}></Col>
-                    <Col sm={4}><Button bsStyle="primary" block  onClick={this.placeOrder.bind(this,"Buy",this.state.Ask)}>Buy</Button></Col>
-                    <Col sm={4}><Button bsStyle="primary" block  onClick={this.placeOrder.bind(this,"Sell",this.state.Bid)}>Sell</Button></Col>
+                    <Col sm={3}>
+                        <ControlLabel>Order Type</ControlLabel>
+                        <FormControl componentClass="select" value={this.currentOrder.OrderType} onChange={this.onSelectOrderType} >
+                            <option value="Market">Market</option><option value="Limit">Limit</option>
+                        </FormControl>
+                    </Col>
+                    <Col sm={3} >
+                        <ControlLabel>Order Duration</ControlLabel>
+                        <FormControl componentClass="select" value={this.currentOrder.Duration} onChange={this.onSelectOrderDuration}>
+                            <option value="DayOrder">DayOrder</option><option value="GoodTillCancel">GoodTillCancel</option>
+                            <option value="GoodTillDate">GoodTillDate</option> <option value="ImmediateOrCancel">ImmediateOrCancel</option>
+                        </FormControl>
+                    </Col>
+                   </Row>
+                    </FormGroup>
+                    <FormGroup  bsSize="large">
+                    <Row>
+                    <Col sm={12} >
+                        <ControlLabel bsStyle="default"><h3>Request Parameters:</h3></ControlLabel>
+                        <FormControl componentClass="textarea" placeholder="textarea" rows={6} value={this.state.orderRequestParams} onChange={this.onChangeRequestParams.bind(this)} />
+                    </Col>
                     </Row>
+                    </FormGroup>
+                    <FormGroup>
+                    <Col smOffset={8} sm={4}><Button bsStyle="primary" block  onClick={this.placeOrder.bind(this)}>Place Order</Button></Col>
                     </FormGroup>
                 </div>
             </Form>
             </Panel>
             </Col>
-            <Col sm={6}>
+            <Col sm={4}>
             <Panel header="Account Info: openapi/port/v1/accounts/me" className="panel-primary">
             <div className="padBox">
             <Table striped bordered condensed hover>
-                <thead>
-                    <tr>
-                        <th width='150'>Data</th>
-                        <th width='150'>Value</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Data</th><th>Value</th></tr></thead>
                 <tbody>
                     <tr  key="AccountId" ><td>AccountId</td><td>{this.accountInfo.AccountId}</td></tr>
                     <tr  key="AccountKey"><td>AccountKey</td><td>{this.accountInfo.AccountKey}</td></tr>
