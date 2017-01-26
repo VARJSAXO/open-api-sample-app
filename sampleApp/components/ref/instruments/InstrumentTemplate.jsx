@@ -29,8 +29,8 @@ export default (props) => {
 				      	</InputGroup>
 			        	<br/><br/><br/>
 						<BootstrapTable data={data} striped condensed hover>
-						    <TableHeaderColumn dataField="Identifier" isKey={true} dataAlign="center" dataSort={true}>Identifier / Uic</TableHeaderColumn>
-						    <TableHeaderColumn dataField="Symbol" dataSort={true}>Symbol</TableHeaderColumn>
+						    <TableHeaderColumn dataField="Identifier" isKey dataAlign="center" dataSort>Identifier / Uic</TableHeaderColumn>
+						    <TableHeaderColumn dataField="Symbol" dataSort>Symbol</TableHeaderColumn>
 						    <TableHeaderColumn dataField="Description">Instrument Name</TableHeaderColumn>
 						    <TableHeaderColumn dataField="AssetType">AssetType</TableHeaderColumn>
 						    <TableHeaderColumn dataField="ExchangeId">Exchange ID</TableHeaderColumn>

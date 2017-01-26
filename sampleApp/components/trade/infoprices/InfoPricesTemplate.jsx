@@ -21,8 +21,8 @@ export default (props) => {
 		    <br/>
 		    { props.state.instrumentSelected ? (
 				<BootstrapTable data={instrumentData} striped condensed hover>
-				    <TableHeaderColumn width='150' dataField="Uic" isKey={true} dataAlign="center" dataSort={true}>Uic</TableHeaderColumn>
-				    <TableHeaderColumn width='150' dataField="AssetType" dataSort={true}>AssetType</TableHeaderColumn>
+				    <TableHeaderColumn width='150' dataField="Uic" isKey dataAlign="center" dataSort>Uic</TableHeaderColumn>
+				    <TableHeaderColumn width='150' dataField="AssetType" dataSort>AssetType</TableHeaderColumn>
 				    <TableHeaderColumn width='150' dataField="Quote.Amount">Amount</TableHeaderColumn>
 				    <TableHeaderColumn width='150' dataField="Quote.Ask">Ask</TableHeaderColumn>
 				    <TableHeaderColumn width='150' dataField="Quote.Bid">Bid</TableHeaderColumn>
