@@ -14,7 +14,7 @@ export default class Prices extends React.Component {
         this.onInstrumentSelected = this.onInstrumentSelected.bind(this);
         this.updateInstrumentData = this.updateInstrumentData.bind(this);
         this.state =  {
-            instrumentSelected: false,
+            instrumentSelected: false
         }
     }
 

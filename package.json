@@ -7,11 +7,14 @@
   },
   "author": "SaxoBank",
   "dependencies": {
+    "flat": "^2.0.1",
     "history": "4.5.0",
     "hoist-non-react-statics": "^1.2.0",
     "invariant": "^2.2.1",
-    "warning": "^3.0.0",
-    "loose-envify": "^1.2.0"
+    "loose-envify": "^1.2.0",
+    "react-bootstrap-table": "^2.10.0",
+    "react-search-input": "^0.10.4",
+    "warning": "^3.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",

@@ -1,46 +1,40 @@
 import React from 'react';
-import { ButtonToolbar, DropdownButton, MenuItem, Table} from 'react-bootstrap';
-import { isEmpty } from 'lodash'
+import { ButtonToolbar, DropdownButton, MenuItem, InputGroup} from 'react-bootstrap';
+import SearchInput, { createFilter } from 'react-search-input'
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { filter } from 'lodash'
+
+const KEYS_TO_FILTERS = ['Description', 'Symbol'];
 
 export default (props) => {
-    var instruments = props.instrumentList.map((instrument) =>  <MenuItem eventKey = {instrument} key = {instrument.Symbol}> {instrument.Description} </MenuItem> );
-    var assetTypes = props.assetTypes.map((assetType) => <MenuItem eventKey = {assetType} key = {assetType}> {assetType} </MenuItem> );
-	var data =  !isEmpty(props.instrumentList) ? props.instrumentList.map((instrument) =>
-			      <tr key={instrument.Uic}>
-			      	<td>{instrument.Identifier}</td>
-			      	<td>{instrument.Symbol}</td>
-			        <td>{instrument.AssetType}</td>
-			        <td>{instrument.Description}</td>
-			        <td>{instrument.ExchangeId}</td>
-			      </tr>
-				) : null;
+    let instruments = props.instrumentList.map((instrument) =>  <MenuItem eventKey = {instrument} key = {instrument.Symbol}> {instrument.Description} </MenuItem> );
+    let assetTypes = props.assetTypes.map((assetType) => <MenuItem eventKey = {assetType} key = {assetType}> {assetType} </MenuItem> );
+	let data = !props.parent ? filter(props.instrumentList, createFilter(props.state.searchTerm, KEYS_TO_FILTERS)) : null;
 	return (
 	    <div className="padBox">
 		    <ButtonToolbar>
-		        <DropdownButton bsStyle="primary" title={props.assetType} id="dropdown-size-large" onSelect = {props.onAssetTypeSelected} >
+		        <DropdownButton bsStyle="primary" title={props.state.assetType} id="dropdown-size-large" onSelect = {props.onAssetTypeSelected} >
 		        	{assetTypes}
-		        </DropdownButton>
-		        { props.hasInstruments ?
+		        </DropdownButton> 
+		        { props.state.hasInstruments ?
 		        	props.parent ?
-			        (<DropdownButton bsStyle="primary" title={props.instrument} id="dropdown-size-large" onSelect = {props.onInstrumentSelected}>
+			        (<DropdownButton bsStyle="primary" title={props.state.instrument} id="dropdown-size-large" onSelect = {props.onInstrumentSelected}>
 						{instruments}
 			        </DropdownButton>) :
 			        (<div>
-			        	<br/>
-			        	<br/>
-			        	<br/>
-				        <Table striped bordered condensed hover>
-						    <thead>
-						     	<tr>
-				    			    <th>Identifier / Uic</th>
-				    			    <th>Symbol</th>
-							        <th>AssetType</th>
-							        <th>Instrument Name</th>
-							        <th>ExchangeId</th>
-					      		</tr>
-						    </thead>
-						    <tbody> {data} </tbody>
-						</Table>
+			        	<br/><br/><br/>
+				      	<InputGroup>
+				        	<InputGroup.Addon><img src="../images/search-icon.png" className="search-icon"></img></InputGroup.Addon>
+				        	<SearchInput className="search-input" onChange={props.searchUpdated}/>
+				      	</InputGroup>
+			        	<br/><br/><br/>
+						<BootstrapTable data={data} striped condensed hover>
+						    <TableHeaderColumn dataField="Identifier" isKey={true} dataAlign="center" dataSort={true}>Identifier / Uic</TableHeaderColumn>
+						    <TableHeaderColumn dataField="Symbol" dataSort={true}>Symbol</TableHeaderColumn>
+						    <TableHeaderColumn dataField="Description">Instrument Name</TableHeaderColumn>
+						    <TableHeaderColumn dataField="AssetType">AssetType</TableHeaderColumn>
+						    <TableHeaderColumn dataField="ExchangeId">Exchange ID</TableHeaderColumn>
+						</BootstrapTable>
 					</div>)
 				: null }
 		    </ButtonToolbar>

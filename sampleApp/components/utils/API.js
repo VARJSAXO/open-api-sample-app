@@ -1,38 +1,60 @@
 // This File lists API's from client lib and explains the request parameters.
-// For further details please refer erfernce documentation at https://developer.saxobank.com/sim/openapi/help/refdoc/v1
+// For further details please refer reference documentation at https://developer.saxobank.com/sim/openapi/help/refdoc/v1
 import DataService from './DataService'
 
 export default {
     // Fetch instruments from client lib based on AssetType. eg.
     // Eg: Query Params : { AssetType: 'FxSpot' }
-    getInstruments: (queryParams, successCallback, errorCallback) => {
+    getInstruments: (instrumentData, successCallback, errorCallback) => {
         var data = {
             method: 'get',
             serviceGroup: 'ref',
             endPoint: 'v1/instruments',
-            queryParams: queryParams
+            queryParams: instrumentData
         };
         DataService.getData(data, successCallback, errorCallback);
     },
     // Fetch Info Prices for a particular instrument based on AssetType and Uic. eg.
     // Eg: Query Params : { AssetType: 'FxSpot', Uic: 21 }
-    getInfoPrices: (queryParams, successCallback, errorCallback) => {
+    getInfoPrices: (instrumentData, successCallback, errorCallback) => {
         var data = {
             method: 'get',
             serviceGroup: 'trade',
             endPoint: 'v1/infoprices',
-            queryParams: queryParams
+            queryParams: {
+                "AssetType": instrumentData.AssetType,
+                "Uic": instrumentData.Uic,
+                "FieldGroups": [
+                    "DisplayAndFormat",
+                    "InstrumentPriceDetails",
+                    "MarketDepth",
+                    "PriceInfo",
+                    "PriceInfoDetails",
+                    "Quote"
+                ]
+            }
         };
         DataService.getData(data, successCallback, errorCallback);
     },
     // Fetch Info Prices for a set of instruments based on AssetType and Uics. eg.
-    // Eg: Query Params : { AssetType: 'FxSpot', Uic: 21,2 }
-    getInfoPricesList: (queryParams, successCallback, errorCallback) => {
+    // Eg: Query Params : { AssetType: 'FxSpot', Uics: 21,2 }
+    getInfoPricesList: (instrumentData, successCallback, errorCallback) => {
         var data = {
             method: 'get',
             serviceGroup: 'trade',
             endPoint: 'v1/infoprices/list',
-            queryParams: queryParams
+            queryParams: {
+                "AssetType": instrumentData.AssetType,
+                "Uics": instrumentData.Uics,
+                "FieldGroups": [
+                    "DisplayAndFormat",
+                    "InstrumentPriceDetails",
+                    "MarketDepth",
+                    "PriceInfo",
+                    "PriceInfoDetails",
+                    "Quote"
+                ]
+            }
         };
         DataService.getData(data, successCallback, errorCallback);
     },
@@ -53,6 +75,14 @@ export default {
                   "Arguments": {
                     "AssetType": instrumentData.AssetType,
                     "Uics": instrumentData.Uics,
+                    "FieldGroups": [
+                        "DisplayAndFormat",
+                        "InstrumentPriceDetails",
+                        "MarketDepth",
+                        "PriceInfo",
+                        "PriceInfoDetails",
+                        "Quote"
+                    ]
                   },
                   "RefreshRate": 5
             }
@@ -76,6 +106,17 @@ export default {
                   "Arguments": {
                     "AssetType": instrumentData.AssetType,
                     "Uic": instrumentData.uic,
+                    "FieldGroups": [
+                        "Commissions", 
+                        "DisplayAndFormat", 
+                        "Greeks", 
+                        "InstrumentPriceDetails",
+                        "MarginImpact",
+                        "MarketDepth",
+                        "PriceInfo",
+                        "PriceInfoDetails",
+                        "Quote"
+                    ]
                   },
                   "RefreshRate": 5
             }

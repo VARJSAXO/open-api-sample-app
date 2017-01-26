@@ -9,16 +9,15 @@ export default class Instruments extends React.Component {
         this.assetTypes = ["FxSpot", "Bond", "Cash", "Stock", "CfdOnFutures", "CfdOnIndex", "CfdOnStock", "ContractFutures", "FuturesStrategy", "StockIndex", "ManagedFund"];
         this.instrumentList = [];
         this.description = "Shows how to get instruments details based on Asset Type";
-        this.state = { hasInstruments : false };
-        this.assetType = 'Select Asset Type',
-        this.instrument = 'Select Instrument',
+        this.state = { hasInstruments : false, searchTerm : '', assetType: 'Select Asset Type', instrument: 'Select Instrument' };
         this.onAssetTypeSelected = this.onAssetTypeSelected.bind(this);
         this.onInstrumentsUpdated = this.onInstrumentsUpdated.bind(this);
         this.onInstrumentSelected = this.onInstrumentSelected.bind(this);
+        this.onSearchUpdated = this.onSearchUpdated.bind(this);
     }
 
     onAssetTypeSelected (eventKey, event) {
-        this.assetType = eventKey;
+        this.setState({searchTerm:'', assetType: eventKey});
         API.getInstruments({ AssetTypes: eventKey },
             this.onInstrumentsUpdated,
             (result) => console.log(result)
@@ -33,19 +32,23 @@ export default class Instruments extends React.Component {
     }
 
     onInstrumentSelected (eventKey, event) {
-        this.instrument = eventKey.Description;
+        this.setState({instrument: eventKey.Description})
         if(this.props.parent) {
             this.props.onInstrumentSelected(eventKey)
         }
+    }
+
+    onSearchUpdated (term) {
+        this.setState({searchTerm: term})
     }
 
     render() {
         return (
             <div>
                 { this.props.parent ?
-                    ( <InstrumentTemplate hasInstruments = {this.state.hasInstruments} assetTypes = {this.assetTypes} instrumentList = {this.instrumentList} onAssetTypeSelected = {this.onAssetTypeSelected} parent={this.props.parent} onInstrumentSelected={this.onInstrumentSelected} assetType={this.assetType} instrument={this.instrument}/>)
+                    ( <InstrumentTemplate state = {this.state} assetTypes = {this.assetTypes} instrumentList = {this.instrumentList} onAssetTypeSelected = {this.onAssetTypeSelected} parent={this.props.parent} onInstrumentSelected={this.onInstrumentSelected}/>)
                     : (<Details Title="Ref Data - EndPoint: v1/instruments" Description = {this.description}>
-                        <InstrumentTemplate hasInstruments = {this.state.hasInstruments} assetTypes = {this.assetTypes} instrumentList = {this.instrumentList} onAssetTypeSelected = {this.onAssetTypeSelected} parent={this.props.parent} assetType={this.assetType} instrument={this.instrument}/>
+                        <InstrumentTemplate state = {this.state} assetTypes = {this.assetTypes} instrumentList = {this.instrumentList} onAssetTypeSelected = {this.onAssetTypeSelected} parent={this.props.parent} searchUpdated = {this.onSearchUpdated}/>
                     </Details>)
                 }
             </div>

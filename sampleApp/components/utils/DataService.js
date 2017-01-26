@@ -33,14 +33,6 @@ export default {
 
     disposeSubscription () {
         this.streaming.disposeSubscription(this.subscription);
-    },
-
-    getTransportSvc() {
-        return this.transport;
-    },
-
-    getStreamingSvc() {
-        return this.streaming;
     }
 
 };

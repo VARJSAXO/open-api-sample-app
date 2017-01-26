@@ -85,3 +85,28 @@
 .pullRight {
    margin-left: 100px !important;
 }
+
+.search-input input {
+    width: 100%;
+    font-size: 18px;
+    border: none;
+    line-height: 22px;
+    padding: 5px 10px 5px 25px;
+    height: 32px;
+    position: relative;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 3px 0 6px rgba(0,0,0,0.24);
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+.search-icon {
+    display: block;
+    position: absolute;
+    width: 15px;
+    z-index: 3;
+    height: 15px;
+    font-size: 20px;
+    top: 8px;
+    left: 6px;
+    line-height: 32px;
+}
