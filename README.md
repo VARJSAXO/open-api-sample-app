@@ -10,8 +10,8 @@ Test: Run node -v. The version should be higher than v0.10.32
  You will need
  
  ```
- git clone https://github.com/VARJSAXO/open-api-sample-app.git
- cd open-api-sample-app
+ git clone https://github.com/VARJSAXO/openapi-feature-sample.git
+ cd openapi-feature-sample
  npm install
  npm start
  ```
