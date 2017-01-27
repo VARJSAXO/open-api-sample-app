@@ -1,6 +1,6 @@
 import React from 'react';
 import { ButtonToolbar, Button} from 'react-bootstrap';
-import { merge, map, omitBy, transform, toArray } from 'lodash'
+import { merge, map, transform, toArray, uniq, forEach } from 'lodash'
 import API from '../../utils/API'
 import Details from '../../Details';
 import Instrument from '../../ref/instruments/Instruments'
@@ -10,7 +10,7 @@ export default class InfoPrices extends React.Component {
 	constructor (props) {
 		super(props);
 		this.instruments = {};
-		this.assetType = '';
+		this.assetTypes = [];
 		this.description = "Shows how to get prices and other trade related information and keep the prices updated as events are recieved over the streaming channel."
 		this.onInstrumentSelected = this.onInstrumentSelected.bind(this);
 		this.updateInstrumentData = this.updateInstrumentData.bind(this);
@@ -34,7 +34,7 @@ export default class InfoPrices extends React.Component {
 
 	updateInstrumentData (data) {
 		this.instruments[data.Uic] = data;
-		this.assetType = data.AssetType;
+		this.assetTypes.push(data.AssetType);
 		this.setState({
 			instrumentSelected: true
 		});
@@ -50,8 +50,14 @@ export default class InfoPrices extends React.Component {
 
 	subscribeInstruments () {
 		if(!this.state.instrumentsSubscribed) {
-			var uics = transform(this.instruments, ((concat, instrument) => concat['uic'] = concat['uic'] ? concat['uic'] +','+ instrument.Uic : instrument.Uic  ), {});
-			API.subscribeInfoPrices({ Uics: uics['uic'], AssetType: this.assetType }, this.updateSubscribedInstruments);
+			forEach(uniq(this.assetTypes), (value, key) => {
+				var uics = transform(this.instruments, ((concat, instrument) => {
+					if(instrument.AssetType === value) {
+						concat['uic'] = concat['uic'] ? concat['uic'] +','+ instrument.Uic : instrument.Uic
+					}
+				}), {});
+				API.subscribeInfoPrices({ Uics: uics['uic'], AssetType: value }, this.updateSubscribedInstruments);
+			});
 			this.setState({
 				instrumentsSubscribed: true,
 			});
@@ -64,8 +70,14 @@ export default class InfoPrices extends React.Component {
 	}
 
 	fetchInstrumentsData () {
-		var uics = transform(this.instruments, ((concat, instrument) => concat['uic'] = concat['uic'] ? concat['uic'] +','+ instrument.Uic : instrument.Uic  ), {});
-		API.getInfoPricesList({ Uics: uics['uic'], AssetType: this.assetType }, this.updateSubscribedInstruments);
+		forEach(uniq(this.assetTypes), (value, key) => {
+			var uics = transform(this.instruments, ((concat, instrument) => {
+				if(instrument.AssetType === value) {
+					concat['uic'] = concat['uic'] ? concat['uic'] +','+ instrument.Uic : instrument.Uic
+				}
+			}), {});
+			API.getInfoPricesList({ Uics: uics['uic'], AssetType: value }, this.updateSubscribedInstruments);
+		});
 	}
 
 	highlightCell () {

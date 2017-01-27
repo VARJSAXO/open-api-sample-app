@@ -5,7 +5,7 @@ import { Navbar, Nav, NavItem } from 'react-bootstrap';
 export default class TopBar extends React.Component {
 	render () {
 		return (
-			<Navbar inverse collapseOnSelect>
+			<Navbar inverse collapseOnSelect fixedTop>
 				<Navbar.Header>
 		      		<Navbar.Brand>
 		      			Open Api - Feature Samples

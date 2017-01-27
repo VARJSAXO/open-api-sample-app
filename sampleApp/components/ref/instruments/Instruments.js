@@ -17,7 +17,7 @@ export default class Instruments extends React.Component {
     }
 
     onAssetTypeSelected (eventKey, event) {
-        this.setState({searchTerm:'', assetType: eventKey});
+        this.setState({searchTerm:'', assetType: eventKey, instrument: 'Select Instrument'});
         API.getInstruments({ AssetTypes: eventKey },
             this.onInstrumentsUpdated,
             (result) => console.log(result)
